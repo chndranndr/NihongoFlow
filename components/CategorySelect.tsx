@@ -5,13 +5,16 @@ import { ChevronRight, ArrowLeft } from 'lucide-react';
 interface CategorySelectProps {
     drillType: DrillCategory;
     level: string;
-    data: Record<string, DrillItem[]>;
+    data: Record<string, Record<string, DrillItem[]>>;
     onSelect: (category: string, items: DrillItem[]) => void;
     onBack: () => void;
 }
 
 const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data, onSelect, onBack }) => {
-    const categories = Object.keys(data).filter(key => key.startsWith(level));
+    // Get the data for the specific level (e.g., 'BEGINNER')
+    // data is structured as { 'BEGINNER': { 'Adjectives': [...], 'Verbs': [...] } }
+    const levelData = data[level] || {};
+    const categories = Object.keys(levelData);
 
     return (
         <div className="max-w-2xl mx-auto pb-20 animate-fade-in">
@@ -30,8 +33,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data,
 
             <div className="grid gap-3">
                 {categories.map((cat) => {
-                    const items = data[cat];
-                    const displayName = cat.split('-')[1] || cat;
+                    const items = levelData[cat];
 
                     return (
                         <button
@@ -41,7 +43,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data,
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <h3 className="text-lg font-bold text-primary">{displayName}</h3>
+                                    <h3 className="text-lg font-bold text-primary">{cat}</h3>
                                     <span className="bg-surface text-secondary text-xs font-bold px-2 py-0.5 rounded-md">
                                         {items.length}
                                     </span>
@@ -63,6 +65,12 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data,
                         </button>
                     );
                 })}
+
+                {categories.length === 0 && (
+                    <div className="text-center p-8 text-secondary">
+                        No categories found for this level yet.
+                    </div>
+                )}
             </div>
         </div>
     );
