@@ -2,219 +2,221 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chat } from '@google/genai';
 import { DifficultyLevel, ChatMessage } from '../types';
 import { startKaiwaSession } from '../services/geminiService';
-import { MessageCircle, Mic, Send, User, Bot, Volume2 } from 'lucide-react';
+import { MessageCircle, Mic, Send, User, Bot, ArrowLeft } from 'lucide-react';
 
 interface KaiwaModeProps {
-  level: DifficultyLevel;
-  onBack: () => void;
+    level: DifficultyLevel;
+    onBack: () => void;
 }
 
 const SCENARIOS = [
-  "Self Introduction (Jikoshoukai)",
-  "Ordering at a Restaurant",
-  "Asking for Directions",
-  "Shopping at a Konbini",
-  "Talking about Hobbies",
-  "Travel Plans"
+    "Self Introduction",
+    "Ordering at a Restaurant",
+    "Asking for Directions",
+    "Shopping",
+    "Hobbies",
+    "Travel Plans"
 ];
 
 const KaiwaMode: React.FC<KaiwaModeProps> = ({ level, onBack }) => {
-  const [chatSession, setChatSession] = useState<Chat | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [scenario, setScenario] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [chatSession, setChatSession] = useState<Chat | null>(null);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [scenario, setScenario] = useState<string | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
-  const initSession = async (selectedScenario: string) => {
-    setScenario(selectedScenario);
-    setIsLoading(true);
-    try {
-      const session = startKaiwaSession(level, selectedScenario);
-      setChatSession(session);
-      
-      // Get initial greeting from AI
-      const response = await session.sendMessage({ message: "Start the conversation." });
-      
-      setMessages([{
-        id: 'init',
-        role: 'model',
-        text: response.text || "Konnichiwa! Let's start chatting.",
-        timestamp: Date.now()
-      }]);
-    } catch (error) {
-      console.error("Failed to start session", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const initSession = async (selectedScenario: string) => {
+        setScenario(selectedScenario);
+        setIsLoading(true);
+        try {
+            const session = startKaiwaSession(level, selectedScenario);
+            setChatSession(session);
 
-  const handleSend = async () => {
-    if (!input.trim() || !chatSession) return;
+            const response = await session.sendMessage({ message: "Start the conversation." });
 
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      text: input,
-      timestamp: Date.now()
+            setMessages([{
+                id: 'init',
+                role: 'model',
+                text: response.text || "Konnichiwa! Let's start chatting.",
+                timestamp: Date.now()
+            }]);
+        } catch (error) {
+            console.error("Failed to start session", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setIsLoading(true);
+    const handleSend = async () => {
+        if (!input.trim() || !chatSession) return;
 
-    try {
-      const result = await chatSession.sendMessage({ message: input });
-      const aiMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'model',
-        text: result.text || "...",
-        timestamp: Date.now()
-      };
-      setMessages(prev => [...prev, aiMsg]);
-    } catch (error) {
-      console.error("Error sending message", error);
-    } finally {
-      setIsLoading(false);
+        const userMsg: ChatMessage = {
+            id: Date.now().toString(),
+            role: 'user',
+            text: input,
+            timestamp: Date.now()
+        };
+
+        setMessages(prev => [...prev, userMsg]);
+        setInput('');
+        setIsLoading(true);
+
+        try {
+            const result = await chatSession.sendMessage({ message: input });
+            const aiMsg: ChatMessage = {
+                id: (Date.now() + 1).toString(),
+                role: 'model',
+                text: result.text || "...",
+                timestamp: Date.now()
+            };
+            setMessages(prev => [...prev, aiMsg]);
+        } catch (error) {
+            console.error("Error sending message", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
+    const handleMicClick = () => {
+        if ('webkitSpeechRecognition' in window) {
+            // @ts-ignore
+            const recognition = new window.webkitSpeechRecognition();
+            recognition.lang = 'ja-JP';
+            recognition.onresult = (event: any) => {
+                const transcript = event.results[0][0].transcript;
+                setInput(prev => prev + transcript);
+            };
+            recognition.start();
+        } else {
+            alert("Speech recognition is only supported in Chrome/Edge.");
+        }
+    };
+
+    if (!scenario) {
+        return (
+            <div className="max-w-xl mx-auto animate-fade-in">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-2 text-secondary hover:text-primary font-medium transition-colors mb-6"
+                >
+                    <ArrowLeft className="w-4 h-4" /> Back
+                </button>
+                <h2 className="text-2xl font-bold text-primary mb-2">Kaiwa</h2>
+                <p className="text-secondary mb-8">Choose a conversation topic</p>
+
+                <div className="grid gap-3">
+                    {SCENARIOS.map((s) => (
+                        <button
+                            key={s}
+                            onClick={() => initSession(s)}
+                            className="w-full bg-white p-5 rounded-2xl border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left flex items-center justify-between group"
+                        >
+                            <span className="font-semibold text-primary group-hover:text-accent transition-colors">{s}</span>
+                            <MessageCircle className="w-5 h-5 text-secondary group-hover:text-accent transition-colors" />
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
     }
-  };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // Simple Speech-to-Text Shim (Chrome/Edge only)
-  const handleMicClick = () => {
-    if ('webkitSpeechRecognition' in window) {
-      // @ts-ignore
-      const recognition = new window.webkitSpeechRecognition();
-      recognition.lang = 'ja-JP';
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInput(prev => prev + transcript);
-      };
-      recognition.start();
-    } else {
-      alert("Speech recognition is only supported in Chrome/Edge.");
-    }
-  };
-
-  if (!scenario) {
     return (
-      <div className="max-w-2xl mx-auto p-4 animate-fade-in">
-        <button onClick={onBack} className="text-slate-500 hover:text-slate-700 font-medium text-sm mb-6">
-          ← Back to Dashboard
-        </button>
-        <h2 className="text-3xl font-bold text-slate-800 mb-2">Choose a Scenario</h2>
-        <p className="text-slate-500 mb-8">Select a topic to practice your Kaiwa (Conversation) skills.</p>
-        
-        <div className="grid gap-4">
-          {SCENARIOS.map((s) => (
-            <button
-              key={s}
-              onClick={() => initSession(s)}
-              className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all text-left flex items-center justify-between group"
-            >
-              <span className="font-bold text-lg text-slate-700 group-hover:text-indigo-600">{s}</span>
-              <MessageCircle className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
-            </button>
-          ))}
+        <div className="max-w-xl mx-auto h-[calc(100vh-140px)] flex flex-col animate-fade-in">
+            <div className="flex items-center justify-between mb-4">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-2 text-secondary hover:text-primary font-medium transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" /> End
+                </button>
+                <span className="text-sm font-semibold text-primary bg-surface px-3 py-1.5 rounded-full truncate max-w-[180px]">
+                    {scenario}
+                </span>
+            </div>
+
+            <div className="flex-1 bg-white rounded-3xl border border-border overflow-hidden flex flex-col">
+                {/* Chat Area */}
+                <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-surface/30">
+                    {messages.map((msg) => (
+                        <div
+                            key={msg.id}
+                            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                            <div className={`flex items-end max-w-[85%] gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-primary' : 'bg-accent'}`}>
+                                    {msg.role === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
+                                </div>
+
+                                <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
+                                        ? 'bg-primary text-white rounded-br-md'
+                                        : 'bg-white text-primary border border-border rounded-bl-md'
+                                    }`}>
+                                    {msg.text}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    {isLoading && (
+                        <div className="flex justify-start">
+                            <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
+                                    <Bot className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md border border-border">
+                                    <div className="flex gap-1">
+                                        <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                                        <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                                        <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input Area */}
+                <div className="p-4 bg-white border-t border-border">
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleMicClick}
+                            className="w-10 h-10 rounded-xl bg-surface text-secondary hover:bg-border/50 hover:text-primary transition-colors flex items-center justify-center"
+                            title="Speak"
+                        >
+                            <Mic className="w-5 h-5" />
+                        </button>
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            placeholder="Type in Japanese..."
+                            className="flex-1 bg-surface text-primary px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 placeholder:text-secondary/50"
+                        />
+                        <button
+                            onClick={handleSend}
+                            disabled={!input.trim() || isLoading}
+                            className="w-10 h-10 rounded-xl bg-primary text-white hover:bg-primary/90 disabled:opacity-50 transition-all flex items-center justify-center"
+                        >
+                            <Send className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
-  }
-
-  return (
-    <div className="max-w-2xl mx-auto p-4 h-[calc(100vh-100px)] flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <button onClick={onBack} className="text-slate-500 hover:text-slate-700 font-medium text-sm">
-          ← End Session
-        </button>
-        <div className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full truncate max-w-[200px]">
-          {scenario}
-        </div>
-      </div>
-
-      <div className="flex-1 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col">
-        {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`flex items-end max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse space-x-2' : 'space-x-2'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-indigo-600' : 'bg-emerald-500'}`}>
-                  {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
-                </div>
-                
-                <div className={`p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
-                  msg.role === 'user' 
-                    ? 'bg-indigo-600 text-white rounded-tr-none' 
-                    : 'bg-white text-slate-800 border border-slate-100 rounded-tl-none'
-                }`}>
-                  {msg.text}
-                </div>
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-               <div className="flex items-center space-x-2">
-                 <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-white" />
-                 </div>
-                 <div className="bg-white px-4 py-3 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm">
-                   <div className="flex space-x-1">
-                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                   </div>
-                 </div>
-               </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 bg-white border-t border-slate-100">
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={handleMicClick}
-              className="p-3 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-indigo-600 transition-colors"
-              title="Speak (Chrome/Edge)"
-            >
-              <Mic className="w-5 h-5" />
-            </button>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Type in Japanese..."
-              className="flex-1 bg-slate-100 text-slate-800 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400"
-            />
-            <button 
-              onClick={handleSend}
-              disabled={!input.trim() || isLoading}
-              className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 transition-all shadow-md hover:shadow-lg"
-            >
-              <Send className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export default KaiwaMode;

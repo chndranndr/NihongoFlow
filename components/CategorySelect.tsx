@@ -1,88 +1,71 @@
 import React from 'react';
 import { DrillCategory, DrillItem } from '../types';
-import { ChevronRight, LayoutGrid, BookOpen, Sparkles } from 'lucide-react';
+import { ChevronRight, ArrowLeft } from 'lucide-react';
 
 interface CategorySelectProps {
-  drillType: DrillCategory;
-  level: string;
-  data: Record<string, Record<string, DrillItem[]>>;
-  onSelect: (categoryName: string, items: DrillItem[]) => void;
-  onBack: () => void;
+    drillType: DrillCategory;
+    level: string;
+    data: Record<string, DrillItem[]>;
+    onSelect: (category: string, items: DrillItem[]) => void;
+    onBack: () => void;
 }
 
 const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data, onSelect, onBack }) => {
-  const levelData = data[level] || {};
-  const categories = Object.keys(levelData);
+    const categories = Object.keys(data).filter(key => key.startsWith(level));
 
-  return (
-    <div className="max-w-4xl mx-auto p-4 animate-fade-in">
-      <div className="flex items-center justify-between mb-10">
-        <button onClick={onBack} className="text-slate-400 hover:text-slate-800 font-medium transition-colors">
-          ← Back to Dashboard
-        </button>
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Choose a Theme</h2>
-          <p className="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">
-            {drillType} • {level}
-          </p>
-        </div>
-        <div className="w-20"></div>
-      </div>
-
-      {categories.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
-          <p className="text-slate-400 font-medium">No categories available for this level yet.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => onSelect(category, levelData[category])}
-              className="group bg-white p-8 rounded-[2rem] shadow-sm hover:shadow-2xl border border-slate-100 hover:border-indigo-100 transition-all duration-500 text-left relative overflow-hidden flex flex-col justify-between min-h-[180px]"
-            >
-              <div className="relative z-10">
-                <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-indigo-50 transition-colors duration-500">
-                  {drillType === DrillCategory.KANJI ? (
-                    <BookOpen className="w-6 h-6 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                  ) : (
-                    <Sparkles className="w-6 h-6 text-slate-400 group-hover:text-emerald-500 transition-colors" />
-                  )}
+    return (
+        <div className="max-w-2xl mx-auto pb-20 animate-fade-in">
+            <div className="flex items-center gap-4 mb-8">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-2 text-secondary hover:text-primary font-medium transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" /> Back
+                </button>
+                <div>
+                    <h1 className="text-xl font-bold text-primary capitalize">{drillType.toLowerCase()} Categories</h1>
+                    <p className="text-secondary text-sm font-medium">{categories.length} Topics Available</p>
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                  {category}
-                </h3>
-                <p className="text-slate-400 text-sm mt-1 font-medium">
-                  {levelData[category].length} items to master
-                </p>
-              </div>
+            </div>
 
-              <div className="mt-6 flex items-center justify-between relative z-10">
-                <div className="flex -space-x-2">
-                  {levelData[category].slice(0, 3).map((item, i) => (
-                    <div 
-                      key={i} 
-                      className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-xs font-bold jp-font text-slate-600"
-                    >
-                      {item.character}
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-slate-50 p-2 rounded-full group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </div>
+            <div className="grid gap-3">
+                {categories.map((cat) => {
+                    const items = data[cat];
+                    const displayName = cat.split('-')[1] || cat;
 
-              {/* Decorative background shape */}
-              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
-                <LayoutGrid className="w-32 h-32 rotate-12" />
-              </div>
-            </button>
-          ))}
+                    return (
+                        <button
+                            key={cat}
+                            onClick={() => onSelect(cat, items)}
+                            className="group w-full bg-white p-5 rounded-2xl border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left flex items-center justify-between"
+                        >
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="text-lg font-bold text-primary">{displayName}</h3>
+                                    <span className="bg-surface text-secondary text-xs font-bold px-2 py-0.5 rounded-md">
+                                        {items.length}
+                                    </span>
+                                </div>
+
+                                <div className="flex gap-2 opacity-60">
+                                    {items.slice(0, 5).map((item, idx) => (
+                                        <span key={idx} className="text-sm text-primary bg-surface px-1.5 rounded jp-font">
+                                            {item.character}
+                                        </span>
+                                    ))}
+                                    {items.length > 5 && <span className="text-xs text-secondary self-end">...</span>}
+                                </div>
+                            </div>
+
+                            <div className="bg-surface p-2 rounded-xl group-hover:bg-primary group-hover:text-white text-secondary transition-all">
+                                <ChevronRight className="w-5 h-5" />
+                            </div>
+                        </button>
+                    );
+                })}
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default CategorySelect;

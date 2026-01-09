@@ -1,3 +1,5 @@
+import { DrillItem } from './types';
+
 export const HIRAGANA_CHART = [
   ['あ', 'い', 'う', 'え', 'お'],
   ['か', 'き', 'く', 'け', 'こ'],
@@ -47,4 +49,18 @@ export const KANA_MAPPING: Record<string, string> = {
   'ヤ': 'ya', 'ユ': 'yu', 'ヨ': 'yo',
   'ラ': 'ra', 'リ': 'ri', 'ル': 'ru', 'レ': 're', 'ロ': 'ro',
   'ワ': 'wa', 'ヲ': 'wo', 'ン': 'n'
+};
+
+// Flatten charts and map to DrillItem structure
+const generateKanaList = (chart: string[][]): DrillItem[] => {
+  return chart.flat().filter(c => c).map(char => ({
+    character: char,
+    primaryReading: KANA_MAPPING[char] || '',
+    meaning: '' // Kana don't have "meaning" in this context
+  }));
+};
+
+export const KANA_DATA = {
+  HIRAGANA: generateKanaList(HIRAGANA_CHART),
+  KATAKANA: generateKanaList(KATAKANA_CHART)
 };

@@ -1,182 +1,153 @@
-
 import React, { useState } from 'react';
-import { HIRAGANA_CHART, KATAKANA_CHART, KANA_MAPPING } from '../kanaData';
 import { DrillItem } from '../types';
-import { Check, ArrowRight, RotateCcw, Play } from 'lucide-react';
+import { KANA_DATA } from '../kanaData';
+import { Settings, ArrowLeft, ArrowRight, CheckSquare, Square } from 'lucide-react';
 
 interface KanaSelectProps {
-  onStart: (items: DrillItem[]) => void;
-  onBack: () => void;
+    onStart: (items: DrillItem[]) => void;
+    onBack: () => void;
 }
 
 const KanaSelect: React.FC<KanaSelectProps> = ({ onStart, onBack }) => {
-  const [tab, setTab] = useState<'HIRAGANA' | 'KATAKANA'>('HIRAGANA');
-  const [selectedChars, setSelectedChars] = useState<Set<string>>(new Set());
-  const [limit, setLimit] = useState<number | 'ALL'>('ALL');
+    const [activeTab, setActiveTab] = useState<'HIRAGANA' | 'KATAKANA'>('HIRAGANA');
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [limit, setLimit] = useState(10);
 
-  const currentChart = tab === 'HIRAGANA' ? HIRAGANA_CHART : KATAKANA_CHART;
+    const currentData = activeTab === 'HIRAGANA' ? KANA_DATA.HIRAGANA : KANA_DATA.KATAKANA;
 
-  const toggleChar = (char: string) => {
-    if (!char) return;
-    const newSet = new Set(selectedChars);
-    if (newSet.has(char)) {
-      newSet.delete(char);
-    } else {
-      newSet.add(char);
-    }
-    setSelectedChars(newSet);
-  };
+    const toggleSelection = (item: DrillItem) => {
+        const next = new Set(selectedIds);
+        if (next.has(item.character)) {
+            next.delete(item.character);
+        } else {
+            next.add(item.character);
+        }
+        setSelectedIds(next);
+    };
 
-  const selectAll = (chart: string[][]) => {
-    const newSet = new Set(selectedChars);
-    chart.flat().forEach(c => {
-      if(c) newSet.add(c);
-    });
-    setSelectedChars(newSet);
-  };
+    const selectAll = () => {
+        const next = new Set(selectedIds);
+        currentData.forEach(item => next.add(item.character));
+        setSelectedIds(next);
+    };
 
-  const clearSelection = () => {
-    setSelectedChars(new Set());
-  };
+    const clearSelection = () => {
+        const next = new Set(selectedIds);
+        currentData.forEach(item => next.delete(item.character));
+        setSelectedIds(next);
+    };
 
-  const handleStart = () => {
-    let items: DrillItem[] = Array.from(selectedChars).map((char: string): DrillItem => ({
-      character: char,
-      primaryReading: KANA_MAPPING[char] || '',
-      meaning: `Sound "${KANA_MAPPING[char]}"`
-    }));
-    
-    // Shuffle
-    for (let i = items.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [items[i], items[j]] = [items[j], items[i]];
-    }
+    const handleStart = () => {
+        const selectedItems = [...KANA_DATA.HIRAGANA, ...KANA_DATA.KATAKANA]
+            .filter(item => selectedIds.has(item.character));
 
-    // Slice based on limit
-    if (limit !== 'ALL') {
-      items = items.slice(0, limit);
-    }
-    
-    onStart(items);
-  };
+        // Shuffle and slice
+        const shuffled = selectedItems.sort(() => Math.random() - 0.5).slice(0, limit);
+        onStart(shuffled);
+    };
 
-  return (
-    <div className="max-w-4xl mx-auto p-4 pb-40">
-      <div className="flex items-center justify-between mb-8">
-        <button onClick={onBack} className="text-slate-500 hover:text-slate-800 font-medium transition-colors">
-          ← Back
-        </button>
-        <h2 className="text-2xl font-bold text-slate-800">Select Kana</h2>
-        <div className="w-16"></div> {/* Spacer */}
-      </div>
+    return (
+        <div className="max-w-4xl mx-auto pb-24 animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-8">
+                <button
+                    onClick={onBack}
+                    className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-secondary hover:text-primary hover:bg-border transition-colors"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div>
+                    <h1 className="text-2xl font-bold text-primary">Kana Select</h1>
+                    <p className="text-secondary text-sm font-medium">Choose characters to practice</p>
+                </div>
+            </div>
 
-      {/* Tabs */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-slate-100 p-1 rounded-2xl inline-flex shadow-inner">
-          <button 
-            onClick={() => setTab('HIRAGANA')}
-            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${tab === 'HIRAGANA' ? 'bg-white text-indigo-600 shadow-sm scale-105' : 'text-slate-400 hover:text-slate-600'}`}
-          >
-            Hiragana
-          </button>
-          <button 
-             onClick={() => setTab('KATAKANA')}
-             className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${tab === 'KATAKANA' ? 'bg-white text-pink-600 shadow-sm scale-105' : 'text-slate-400 hover:text-slate-600'}`}
-          >
-            Katakana
-          </button>
+            {/* Tabs */}
+            <div className="bg-surface p-1 rounded-2xl flex mb-8">
+                {(['HIRAGANA', 'KATAKANA'] as const).map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`
+              flex-1 py-3 text-sm font-bold rounded-xl transition-all
+              ${activeTab === tab ? 'bg-white text-primary shadow-sm' : 'text-secondary hover:text-primary'}
+            `}
+                    >
+                        {tab.charAt(0) + tab.slice(1).toLowerCase()}
+                    </button>
+                ))}
+            </div>
+
+            {/* Grid */}
+            <div className="grid grid-cols-5 md:grid-cols-10 gap-2 md:gap-3 mb-8">
+                {currentData.map((item) => {
+                    const isSelected = selectedIds.has(item.character);
+                    return (
+                        <button
+                            key={item.character}
+                            onClick={() => toggleSelection(item)}
+                            className={`
+                aspect-square rounded-xl flex flex-col items-center justify-center transition-all duration-200 border-2
+                ${isSelected
+                                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20 scale-105'
+                                    : 'bg-white border-transparent text-primary hover:border-border hover:bg-surface'
+                                }
+              `}
+                        >
+                            <span className="text-xl font-bold jp-font mb-0.5">{item.character}</span>
+                            <span className={`text-[10px] font-bold uppercase ${isSelected ? 'text-white/60' : 'text-secondary'}`}>
+                                {item.primaryReading}
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-center gap-4 mb-8">
+                <button onClick={selectAll} className="text-sm font-bold text-accent hover:text-accent/80 transition-colors">
+                    Select All
+                </button>
+                <span className="text-border">|</span>
+                <button onClick={clearSelection} className="text-sm font-bold text-secondary hover:text-primary transition-colors">
+                    Clear
+                </button>
+            </div>
+
+            {/* Floating Action Bar */}
+            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
+                <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-4 flex items-center justify-between gap-4 ring-1 ring-black/5">
+                    <div className="flex items-center gap-3 pl-2">
+                        <span className="text-xs font-bold text-secondary uppercase tracking-wider">Limit</span>
+                        <select
+                            value={limit}
+                            onChange={(e) => setLimit(Number(e.target.value))}
+                            className="bg-surface text-primary font-bold text-sm rounded-lg py-1.5 pl-2 pr-6 border-none focus:ring-2 focus:ring-accent/20 cursor-pointer hover:bg-border/50 transition-colors appearance-none"
+                            style={{ backgroundImage: 'none' }}
+                        >
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>All</option>
+                        </select>
+                    </div>
+
+                    <button
+                        onClick={handleStart}
+                        disabled={selectedIds.size === 0}
+                        className="flex-1 bg-primary text-white py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center"
+                    >
+                        Start Practice
+                        {selectedIds.size > 0 && (
+                            <span className="ml-2 bg-white/20 px-1.5 rounded text-xs">
+                                {Math.min(selectedIds.size, limit)}
+                            </span>
+                        )}
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-
-      {/* Chart Grid */}
-      <div className="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-slate-100 mb-8">
-        <div className="grid grid-cols-5 gap-3 md:gap-4 mb-6">
-          {currentChart.map((row, rIdx) => (
-             <React.Fragment key={rIdx}>
-               {row.map((char, cIdx) => (
-                 <div key={`${rIdx}-${cIdx}`} className="aspect-square">
-                   {char ? (
-                     <button
-                       onClick={() => toggleChar(char)}
-                       className={`w-full h-full rounded-2xl flex items-center justify-center text-2xl md:text-3xl font-bold jp-font transition-all duration-200 border-2
-                         ${selectedChars.has(char) 
-                           ? (tab === 'HIRAGANA' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200 transform scale-105' : 'bg-pink-600 border-pink-600 text-white shadow-lg shadow-pink-200 transform scale-105')
-                           : 'bg-slate-50 border-slate-100 text-slate-400 hover:bg-slate-100 hover:border-slate-200'
-                         }
-                       `}
-                     >
-                       {char}
-                       {selectedChars.has(char) && (
-                         <div className="absolute top-1 right-1 md:top-2 md:right-2">
-                           <div className="bg-white/30 rounded-full p-0.5">
-                             <Check className="w-3 h-3 text-white" />
-                           </div>
-                         </div>
-                       )}
-                     </button>
-                   ) : (
-                     <div className="w-full h-full" /> 
-                   )}
-                 </div>
-               ))}
-             </React.Fragment>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4 border-t border-slate-100 pt-6">
-          <button 
-            onClick={() => selectAll(currentChart)}
-            className="px-6 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold text-sm transition-colors"
-          >
-            Select All {tab === 'HIRAGANA' ? 'Hiragana' : 'Katakana'}
-          </button>
-           <button 
-            onClick={clearSelection}
-            className="px-6 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold text-sm transition-colors flex items-center"
-          >
-            <RotateCcw className="w-4 h-4 mr-2" /> Clear
-          </button>
-        </div>
-      </div>
-
-      {/* Floating Action Bar */}
-      <div className={`fixed bottom-8 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto max-w-2xl flex flex-col md:flex-row items-center gap-4 bg-white/90 backdrop-blur-xl p-2 rounded-[2rem] shadow-2xl border border-slate-200 z-50 transition-transform duration-500 ${selectedChars.size > 0 ? 'translate-y-0' : 'translate-y-48'}`}>
-        
-        {/* Limit Selector */}
-        <div className="bg-slate-100 p-1.5 rounded-full flex items-center shadow-inner w-full md:w-auto justify-between">
-          {[10, 20, 'ALL'].map((opt) => (
-            <button
-              key={opt}
-              onClick={() => setLimit(opt as number | 'ALL')}
-              className={`px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 min-w-[80px] ${
-                limit === opt 
-                  ? 'bg-white text-indigo-600 shadow-sm' 
-                  : 'text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              {opt === 'ALL' ? 'All' : opt}
-            </button>
-          ))}
-        </div>
-
-        {/* Start Button */}
-        <button
-          onClick={handleStart}
-          className="bg-slate-900 text-white pl-8 pr-6 py-4 rounded-full shadow-xl shadow-slate-300 flex items-center space-x-3 hover:scale-105 hover:bg-slate-800 transition-all duration-300 w-full md:w-auto justify-center group"
-        >
-          <div className="flex flex-col items-start leading-none">
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{selectedChars.size} Selected</span>
-             <span className="text-base font-bold">
-              Start Practice
-            </span>
-          </div>
-          <div className="bg-white/20 p-1.5 rounded-full group-hover:bg-white/30 transition-colors">
-             <Play className="w-4 h-4 fill-current" />
-          </div>
-        </button>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default KanaSelect;
