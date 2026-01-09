@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { App as CapacitorApp } from '@capacitor/app';
 import { AppMode, DrillCategory, DifficultyLevel, DrillItem } from './types';
 import { KANJI_DATA } from './kanjiData';
 import { VOCAB_DATA } from './vocabData';
@@ -25,6 +26,23 @@ const App: React.FC = () => {
 
     // Settings Modal State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+    // Back Button Handling
+    useEffect(() => {
+        const backButtonListener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+            if (mode === AppMode.DASHBOARD) {
+                CapacitorApp.exitApp();
+            } else if (mode === AppMode.CATEGORY_DETAIL) {
+                setMode(AppMode.CATEGORY_SELECT);
+            } else {
+                setMode(AppMode.DASHBOARD);
+            }
+        });
+
+        return () => {
+            backButtonListener.then(handler => handler.remove());
+        };
+    }, [mode]);
 
     // --- Handlers ---
 
