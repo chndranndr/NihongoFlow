@@ -4,13 +4,13 @@ import { GrammarLesson, DifficultyLevel } from "../types";
 const STORAGE_KEY = 'gemini_api_key';
 const TEXT_MODEL_NAME = 'gemini-3-flash-preview';
 // User specifically requested gemini-3-pro-preview for image analysis
-const IMAGE_MODEL_NAME = 'gemini-3-pro-preview'; 
+const IMAGE_MODEL_NAME = 'gemini-3-pro-preview';
 
 /**
  * Retrieves the API key from local storage or environment variable.
  */
 export const getApiKey = (): string | null => {
-  return localStorage.getItem(STORAGE_KEY) || process.env.API_KEY || null;
+  return localStorage.getItem(STORAGE_KEY) || null;
 };
 
 /**
@@ -129,9 +129,9 @@ export const analyzeJapaneseImage = async (base64Image: string, mimeType: string
 export const generateAIGrammarLesson = async (level: DifficultyLevel): Promise<GrammarLesson | null> => {
   try {
     const ai = getAIClient();
-    
+
     const prompt = `Create a unique Japanese grammar lesson for a grammar point suitable for ${level}. Do not use common basic ones like 'wa' or 'no' if possible, try to find something interesting but appropriate for the level. Include an explanation, examples, and a multiple-choice fill-in-the-blank quiz question.`;
-    
+
     const grammarSchema = {
       type: Type.OBJECT,
       properties: {
@@ -190,7 +190,7 @@ export const generateAIGrammarLesson = async (level: DifficultyLevel): Promise<G
  */
 export const startKaiwaSession = (level: DifficultyLevel, scenario: string): Chat => {
   const ai = getAIClient();
-  
+
   return ai.chats.create({
     model: TEXT_MODEL_NAME,
     config: {
