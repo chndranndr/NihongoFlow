@@ -4,6 +4,7 @@ import { AppMode, DrillCategory, DifficultyLevel, DrillItem } from './types';
 import { KANJI_DATA } from './kanjiData';
 import { VOCAB_DATA } from './vocabData';
 import { getApiKey } from './services/geminiService';
+import { loadCards, calculateStats } from './services/srsService';
 import DrillMode from './components/DrillMode';
 import KanaSelect from './components/KanaSelect';
 import CategorySelect from './components/CategorySelect';
@@ -12,8 +13,10 @@ import GrammarLibrary from './components/GrammarLibrary';
 import AIGrammarMode from './components/AIGrammarMode';
 import KaiwaMode from './components/KaiwaMode';
 import ImageAnalyzer from './components/ImageAnalyzer';
+import SRSReview from './components/SRSReview';
+import SRSStats from './components/SRSStats';
 import ApiKeyModal from './components/ApiKeyModal';
-import { Book, Languages, Sparkles, ArrowRight, MessageCircle, Settings, ScanLine, ChevronDown } from 'lucide-react';
+import { Book, Languages, Sparkles, ArrowRight, MessageCircle, Settings, ScanLine, ChevronDown, Brain, BarChart3 } from 'lucide-react';
 
 const App: React.FC = () => {
     const [mode, setMode] = useState<AppMode>(AppMode.DASHBOARD);
@@ -26,6 +29,9 @@ const App: React.FC = () => {
 
     // Settings Modal State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+    // SRS State
+    const [srsDueCount, setSrsDueCount] = useState(0);
 
     // Back Button Handling
     useEffect(() => {
@@ -100,6 +106,23 @@ const App: React.FC = () => {
     const handleStartImageAnalyzer = () => {
         checkKeyAndProceed(AppMode.IMAGE_ANALYZER);
     };
+
+    const handleStartSRSReview = () => {
+        setMode(AppMode.SRS_REVIEW);
+    };
+
+    const handleStartSRSStats = () => {
+        setMode(AppMode.SRS_STATS);
+    };
+
+    // Load SRS due count when on dashboard
+    useEffect(() => {
+        if (mode === AppMode.DASHBOARD) {
+            const cards = loadCards();
+            const stats = calculateStats(cards);
+            setSrsDueCount(stats.dueToday);
+        }
+    }, [mode]);
 
     const currentLevelKey = selectedLevel.split(' ')[0].toUpperCase();
 
@@ -212,6 +235,49 @@ const App: React.FC = () => {
                                     <p className="text-sm text-secondary font-medium mb-4">Essential words</p>
                                     <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                                         Start <ArrowRight className="w-4 h-4 ml-1" />
+                                    </div>
+                                </button>
+                            </div>
+                        </section>
+
+                        {/* SRS Section */}
+                        <section className="mb-16">
+                            <h2 className="text-xs font-bold text-secondary uppercase tracking-widest mb-6">Spaced Repetition</h2>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {/* SRS Review */}
+                                <button
+                                    onClick={handleStartSRSReview}
+                                    className="group text-left p-6 bg-gradient-to-br from-accent to-green-500 rounded-2xl hover:shadow-lg hover:shadow-accent/20 transition-all duration-300"
+                                >
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                                                <Brain className="w-5 h-5 text-white" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-white mb-1">SRS Review</h3>
+                                            <p className="text-sm text-white/70 font-medium">
+                                                {srsDueCount > 0 ? `${srsDueCount} cards due` : 'All caught up!'}
+                                            </p>
+                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
+                                    </div>
+                                </button>
+
+                                {/* SRS Stats */}
+                                <button
+                                    onClick={handleStartSRSStats}
+                                    className="group text-left p-6 bg-surface border border-transparent rounded-2xl hover:bg-white hover:border-border hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
+                                >
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <div className="w-10 h-10 bg-white border border-border rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                                                <BarChart3 className="w-5 h-5 text-primary" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-primary mb-1">Statistics</h3>
+                                            <p className="text-sm text-secondary font-medium">Track progress</p>
+                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
                                     </div>
                                 </button>
                             </div>
@@ -359,6 +425,20 @@ const App: React.FC = () => {
                 {mode === AppMode.IMAGE_ANALYZER && (
                     <ImageAnalyzer
                         onBack={() => setMode(AppMode.DASHBOARD)}
+                    />
+                )}
+
+                {mode === AppMode.SRS_REVIEW && (
+                    <SRSReview
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                        onViewStats={() => setMode(AppMode.SRS_STATS)}
+                    />
+                )}
+
+                {mode === AppMode.SRS_STATS && (
+                    <SRSStats
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                        onStartReview={() => setMode(AppMode.SRS_REVIEW)}
                     />
                 )}
 

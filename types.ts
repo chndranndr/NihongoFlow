@@ -9,6 +9,8 @@ export enum AppMode {
   AI_GRAMMAR = 'AI_GRAMMAR',
   KAIWA = 'KAIWA',
   IMAGE_ANALYZER = 'IMAGE_ANALYZER',
+  SRS_REVIEW = 'SRS_REVIEW',
+  SRS_STATS = 'SRS_STATS',
 }
 
 export enum DrillCategory {
