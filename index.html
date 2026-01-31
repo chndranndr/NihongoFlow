@@ -18,30 +18,40 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Nunito+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"
         rel="stylesheet">
 
     <!-- Tailwind Script for Quick Styling (Simulating built-in CSS for this environment) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        sans: ['Nunito Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        heading: ['Varela Round', 'sans-serif'],
                         jp: ['Noto Sans JP', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#1D1D1F',   // Apple Dark/Black
-                        secondary: '#86868B', // Apple Gray
-                        accent: '#0071E3',    // Apple Blue
-                        surface: '#FAFAFA',   // Light Gray Background
-                        border: '#E5E5E5',    // Subtle Border
+                        primary: 'var(--color-primary)',
+                        secondary: 'var(--color-secondary)',
+                        accent: 'var(--color-accent)',
+                        surface: 'var(--color-surface)',
+                        border: 'var(--color-border)',
+                        card: 'var(--color-card)',
+                    },
+                    boxShadow: {
+                        'neu': 'var(--neu-shadow)',
+                        'neu-inset': 'var(--neu-shadow-inset)',
+                        'glow': '0 0 20px var(--color-accent)',
+                        'glow-sm': '0 0 10px var(--color-accent)',
                     },
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-out forwards',
                         'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
                         'scale-in': 'scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -55,6 +65,10 @@
                         scaleIn: {
                             '0%': { opacity: '0', transform: 'scale(0.95)' },
                             '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px var(--color-accent)' },
+                            '50%': { boxShadow: '0 0 30px var(--color-accent), 0 0 50px var(--color-accent)' },
                         }
                     }
                 }
@@ -63,18 +77,124 @@
     </script>
 
     <style>
+        /* Light Mode (Neumorphism Retro-Futurism) */
+        :root {
+            --color-primary: #4F46E5;
+            --color-secondary: #6366F1;
+            --color-accent: #22C55E;
+            --color-surface: #E8E6F2;
+            --color-border: #C7C3D4;
+            --color-card: #F0EDF8;
+            --bg-color: #F5F3FA;
+            --text-color: #312E81;
+            --text-muted: #6B7280;
+
+            /* Neumorphism shadows */
+            --neu-light: rgba(255, 255, 255, 0.8);
+            --neu-dark: rgba(174, 174, 192, 0.4);
+            --neu-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+            --neu-shadow-inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+            --neu-shadow-sm: 3px 3px 6px var(--neu-dark), -3px -3px 6px var(--neu-light);
+        }
+
+        /* Dark Mode (Neumorphism Retro-Futurism) */
+        :root.dark {
+            --color-primary: #818CF8;
+            --color-secondary: #A5B4FC;
+            --color-accent: #4ADE80;
+            --color-surface: #1E1B2E;
+            --color-border: #3D3854;
+            --color-card: #252238;
+            --bg-color: #0F0D1A;
+            --text-color: #E0E7FF;
+            --text-muted: #9CA3AF;
+
+            /* Dark neumorphism shadows */
+            --neu-light: rgba(60, 55, 85, 0.5);
+            --neu-dark: rgba(5, 3, 15, 0.6);
+            --neu-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+            --neu-shadow-inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+            --neu-shadow-sm: 3px 3px 6px var(--neu-dark), -3px -3px 6px var(--neu-light);
+        }
+
         /* Base Styles */
         body {
-            background-color: #FFFFFF;
-            color: #1D1D1F;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Nunito Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Heading Font */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Varela Round', sans-serif;
         }
 
         /* Japanese Font Utility */
         .jp-font {
             font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* Neumorphism Utilities */
+        .neu-raised {
+            background: var(--bg-color);
+            box-shadow: var(--neu-shadow);
+            border-radius: 1rem;
+        }
+
+        .neu-inset {
+            background: var(--bg-color);
+            box-shadow: var(--neu-shadow-inset);
+            border-radius: 1rem;
+        }
+
+        .neu-card {
+            background: var(--color-card);
+            box-shadow: var(--neu-shadow);
+            border-radius: 1.5rem;
+            border: 1px solid var(--color-border);
+        }
+
+        .neu-btn {
+            background: var(--bg-color);
+            box-shadow: var(--neu-shadow-sm);
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .neu-btn:hover {
+            box-shadow: var(--neu-shadow);
+            transform: translateY(-2px);
+        }
+
+        .neu-btn:active,
+        .neu-btn-pressed {
+            box-shadow: var(--neu-shadow-inset);
+            transform: translateY(0);
+        }
+
+        /* Neon Glow Effects */
+        .glow-accent {
+            box-shadow: 0 0 20px var(--color-accent), 0 0 40px var(--color-accent);
+        }
+
+        .glow-primary {
+            box-shadow: 0 0 20px var(--color-primary), 0 0 40px var(--color-primary);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 40px currentColor;
+        }
+
+        .neon-text-subtle {
+            text-shadow: 0 0 8px currentColor;
         }
 
         /* Custom Scrollbar (Minimalist) */
@@ -87,12 +207,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #E5E5E5;
+            background: var(--color-border);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #D1D1D1;
+            background: var(--color-secondary);
         }
 
         /* Hide scrollbar for clean UI but allow drill */
@@ -104,7 +224,77 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Dark mode specific overrides */
+        .dark .bg-white {
+            background-color: var(--color-card) !important;
+        }
+
+        .dark .bg-white\/80 {
+            background-color: rgba(37, 34, 56, 0.8) !important;
+        }
+
+        .dark .border-border {
+            border-color: var(--color-border) !important;
+        }
+
+        /* Dark mode card styles */
+        .dark .bg-surface {
+            background-color: var(--color-surface) !important;
+        }
+
+        /* Dark mode form inputs */
+        .dark input,
+        .dark select,
+        .dark textarea {
+            background-color: var(--color-surface);
+            border-color: var(--color-border);
+            color: var(--text-color);
+        }
+
+        /* Dark mode status colors */
+        .dark .bg-green-50 {
+            background-color: rgba(34, 197, 94, 0.15) !important;
+        }
+
+        .dark .border-green-100 {
+            border-color: rgba(34, 197, 94, 0.25) !important;
+        }
+
+        .dark .text-green-800 {
+            color: #86efac !important;
+        }
+
+        .dark .text-green-600 {
+            color: #4ade80 !important;
+        }
+
+        /* Dark mode buttons - retro accent */
+        .dark .bg-primary {
+            background-color: #4F46E5 !important;
+        }
+
+        .dark .hover\:bg-primary\/90:hover {
+            background-color: rgba(79, 70, 229, 0.9) !important;
+        }
+
+        /* Neumorphic glow on hover for dark mode */
+        .dark .neu-card:hover {
+            box-shadow: var(--neu-shadow), 0 0 30px rgba(129, 140, 248, 0.15);
+        }
     </style>
+
+    <script>
+            // Theme initialization - runs before body renders to prevent flash
+            (function () {
+                const savedTheme = localStorage.getItem('nihongoflow-theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                }
+            })();
+    </script>
 </head>
 
 <body>

@@ -11,12 +11,40 @@ export enum AppMode {
   IMAGE_ANALYZER = 'IMAGE_ANALYZER',
   SRS_REVIEW = 'SRS_REVIEW',
   SRS_STATS = 'SRS_STATS',
+  NUMBER_DRILL_SETUP = 'NUMBER_DRILL_SETUP',
+  NUMBER_DRILL = 'NUMBER_DRILL',
+  DATE_DRILL_SETUP = 'DATE_DRILL_SETUP',
+  DATE_DRILL = 'DATE_DRILL',
 }
 
 export enum DrillCategory {
   KANA = 'KANA',
   KANJI = 'KANJI',
   VOCAB = 'VOCAB',
+  NUMBERS = 'NUMBERS',
+  DATES = 'DATES',
+}
+
+// Number drill direction
+export type NumberDrillDirection = 'jp-to-num' | 'num-to-jp';
+
+export interface NumberDrillConfig {
+  direction: NumberDrillDirection;
+  minRange: number;
+  maxRange: number;
+  itemCount: number;
+}
+
+// Date drill mode
+export type DateDrillMode = 'days-of-week' | 'full-date';
+export type DateDrillDirection = 'jp-to-en' | 'en-to-jp';
+
+export interface DateDrillConfig {
+  mode: DateDrillMode;
+  direction: DateDrillDirection;
+  startYear?: number;
+  endYear?: number;
+  itemCount: number;
 }
 
 export enum DifficultyLevel {

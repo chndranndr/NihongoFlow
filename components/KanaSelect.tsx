@@ -52,25 +52,25 @@ const KanaSelect: React.FC<KanaSelectProps> = ({ onStart, onBack }) => {
             <div className="flex items-center gap-4 mb-8">
                 <button
                     onClick={onBack}
-                    className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-secondary hover:text-primary hover:bg-border transition-colors"
+                    className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-primary transition-all"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                    <h1 className="text-2xl font-bold text-primary">Kana Select</h1>
+                    <h1 className="text-2xl font-heading font-bold text-primary">Kana Select</h1>
                     <p className="text-secondary text-sm font-medium">Choose characters to practice</p>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="bg-surface p-1 rounded-2xl flex mb-8">
+            <div className="neu-raised p-1 flex mb-8">
                 {(['HIRAGANA', 'KATAKANA'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`
               flex-1 py-3 text-sm font-bold rounded-xl transition-all
-              ${activeTab === tab ? 'bg-white text-primary shadow-sm' : 'text-secondary hover:text-primary'}
+              ${activeTab === tab ? 'neu-btn-pressed text-primary' : 'text-secondary hover:text-primary'}
             `}
                     >
                         {tab.charAt(0) + tab.slice(1).toLowerCase()}
@@ -87,10 +87,10 @@ const KanaSelect: React.FC<KanaSelectProps> = ({ onStart, onBack }) => {
                             key={item.character}
                             onClick={() => toggleSelection(item)}
                             className={`
-                aspect-square rounded-xl flex flex-col items-center justify-center transition-all duration-200 border-2
+                aspect-square rounded-xl flex flex-col items-center justify-center transition-all duration-200 cursor-pointer
                 ${isSelected
-                                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20 scale-105'
-                                    : 'bg-white border-transparent text-primary hover:border-border hover:bg-surface'
+                                    ? 'neu-btn-pressed text-primary shadow-glow'
+                                    : 'neu-btn hover:shadow-glow-sm'
                                 }
               `}
                         >
@@ -116,13 +116,13 @@ const KanaSelect: React.FC<KanaSelectProps> = ({ onStart, onBack }) => {
 
             {/* Floating Action Bar */}
             <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
-                <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-4 flex items-center justify-between gap-4 ring-1 ring-black/5">
+                <div className="neu-card p-4 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 pl-2">
                         <span className="text-xs font-bold text-secondary uppercase tracking-wider">Limit</span>
                         <select
                             value={limit}
                             onChange={(e) => setLimit(Number(e.target.value))}
-                            className="bg-surface text-primary font-bold text-sm rounded-lg py-1.5 pl-2 pr-6 border-none focus:ring-2 focus:ring-accent/20 cursor-pointer hover:bg-border/50 transition-colors appearance-none"
+                            className="neu-inset text-primary font-bold text-sm rounded-lg py-1.5 pl-2 pr-6 border-none focus:ring-2 focus:ring-accent/20 cursor-pointer transition-all appearance-none"
                             style={{ backgroundImage: 'none' }}
                         >
                             <option value={10}>10</option>
@@ -135,7 +135,7 @@ const KanaSelect: React.FC<KanaSelectProps> = ({ onStart, onBack }) => {
                     <button
                         onClick={handleStart}
                         disabled={selectedIds.size === 0}
-                        className="flex-1 bg-primary text-white py-3 rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center"
+                        className="flex-1 py-3 rounded-xl font-bold text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-glow flex items-center justify-center" style={{ background: 'var(--color-primary)' }}
                     >
                         Start Practice
                         {selectedIds.size > 0 && (

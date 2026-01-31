@@ -1,35 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { DrillCategory, DrillItem } from '../types';
-import { Check, ArrowRight, X, RotateCcw, ArrowLeft } from 'lucide-react';
+import { NumberDrillConfig } from '../types';
+import { generateNumberDrillItems, NumberDrillItem } from '../numberData';
+import { Check, ArrowRight, X, RotateCcw } from 'lucide-react';
 
-interface DrillModeProps {
-    category: DrillCategory;
-    items: DrillItem[];
+interface NumberDrillModeProps {
+    config: NumberDrillConfig;
     onBack: () => void;
 }
 
-const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
+const NumberDrillMode: React.FC<NumberDrillModeProps> = ({ config, onBack }) => {
+    const [items, setItems] = useState<NumberDrillItem[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [input, setInput] = useState('');
     const [feedback, setFeedback] = useState<'IDLE' | 'CORRECT' | 'WRONG'>('IDLE');
     const [score, setScore] = useState({ correct: 0, total: 0 });
-    const [shuffledItems, setShuffledItems] = useState<DrillItem[]>([]);
     const [isComplete, setIsComplete] = useState(false);
 
     useEffect(() => {
-        // Simple shuffle
-        setShuffledItems([...items].sort(() => Math.random() - 0.5));
-    }, [items]);
+        const drillItems = generateNumberDrillItems(config.minRange, config.maxRange, config.itemCount);
+        setItems(drillItems);
+    }, [config]);
 
-    const currentItem = shuffledItems[currentIndex];
+    const currentItem = items[currentIndex];
+    const isJpToNum = config.direction === 'jp-to-num';
 
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
         if (feedback !== 'IDLE' || !currentItem) return;
 
-        const isCorrect =
-            input.toLowerCase().trim() === currentItem.primaryReading.toLowerCase() ||
-            currentItem.alternateReadings?.some(r => r.toLowerCase() === input.toLowerCase().trim());
+        let isCorrect = false;
+        const userInput = input.toLowerCase().trim();
+
+        if (isJpToNum) {
+            // Japanese → Number: user types the number
+            isCorrect = parseInt(userInput) === currentItem.value;
+        } else {
+            // Number → Japanese: user types romaji
+            isCorrect = userInput === currentItem.romaji.toLowerCase();
+        }
 
         setFeedback(isCorrect ? 'CORRECT' : 'WRONG');
         setScore(prev => ({
@@ -39,7 +47,7 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     };
 
     const handleNext = () => {
-        if (currentIndex < shuffledItems.length - 1) {
+        if (currentIndex < items.length - 1) {
             setCurrentIndex(prev => prev + 1);
             setInput('');
             setFeedback('IDLE');
@@ -49,13 +57,18 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     };
 
     const handleRetry = () => {
-        setShuffledItems([...items].sort(() => Math.random() - 0.5));
+        const drillItems = generateNumberDrillItems(config.minRange, config.maxRange, config.itemCount);
+        setItems(drillItems);
         setCurrentIndex(0);
         setInput('');
         setFeedback('IDLE');
         setScore({ correct: 0, total: 0 });
         setIsComplete(false);
     };
+
+    if (items.length === 0) {
+        return <div className="text-center py-12 text-secondary">Loading...</div>;
+    }
 
     if (!currentItem || isComplete) {
         const percentage = Math.round((score.correct / items.length) * 100);
@@ -99,41 +112,51 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                 <div className="flex-1 mx-6 h-1.5 bg-surface rounded-full overflow-hidden">
                     <div
                         className="h-full bg-accent transition-all duration-500 ease-out"
-                        style={{ width: `${((currentIndex + 1) / shuffledItems.length) * 100}%` }}
+                        style={{ width: `${((currentIndex + 1) / items.length) * 100}%` }}
                     />
                 </div>
                 <span className="text-xs font-bold text-secondary tabular-nums">
-                    {currentIndex + 1} / {shuffledItems.length}
+                    {currentIndex + 1} / {items.length}
                 </span>
             </div>
 
             {/* Card */}
             <div className="flex-1 flex flex-col items-center justify-center mb-8 relative">
                 <div className={`
-          w-full aspect-square neu-card flex items-center justify-center p-8 transition-all duration-300
-          ${feedback === 'IDLE' ? '' : feedback === 'CORRECT' ? 'glow-accent' : 'shadow-[0_0_20px_rgba(239,68,68,0.5)]'}
-        `}>
-                    <span className={`text-[8rem] font-bold jp-font leading-none ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-600' : 'text-red-500'
-                        }`}>
-                        {currentItem.character}
-                    </span>
+                    w-full aspect-square neu-card flex flex-col items-center justify-center p-8 transition-all duration-300
+                    ${feedback === 'IDLE' ? '' : feedback === 'CORRECT' ? 'glow-accent' : 'shadow-[0_0_20px_rgba(239,68,68,0.5)]'}
+                `}>
+                    {isJpToNum ? (
+                        // Show Japanese, expect number
+                        <>
+                            <span className={`text-[5rem] font-bold jp-font leading-none mb-4 ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-600' : 'text-red-500'
+                                }`}>
+                                {currentItem.kanji}
+                            </span>
+                            <span className="text-lg text-secondary">{currentItem.hiragana}</span>
+                        </>
+                    ) : (
+                        // Show number, expect Japanese
+                        <span className={`text-[6rem] font-bold leading-none tabular-nums ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-600' : 'text-red-500'
+                            }`}>
+                            {currentItem.value.toLocaleString()}
+                        </span>
+                    )}
                 </div>
 
                 {/* Answer Reveal */}
                 <div className={`
-          absolute -bottom-6 w-[90%] neu-card p-4 transition-all duration-300 transform
-          ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
-        `}>
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-accent font-bold text-lg mb-0.5">{currentItem.primaryReading}</p>
-                            <p className="text-primary font-medium leading-tight">{currentItem.meaning}</p>
-                        </div>
-                        {category === DrillCategory.KANJI && (
-                            <div className="text-right text-xs text-secondary space-y-0.5">
-                                {currentItem.onyomi && <p><span className="font-semibold">On:</span> {currentItem.onyomi.join(', ')}</p>}
-                                {currentItem.kunyomi && <p><span className="font-semibold">Kun:</span> {currentItem.kunyomi.join(', ')}</p>}
-                            </div>
+                    absolute -bottom-6 w-[90%] neu-card p-4 transition-all duration-300 transform
+                    ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
+                `}>
+                    <div className="text-center">
+                        {isJpToNum ? (
+                            <p className="text-accent font-bold text-2xl">{currentItem.value.toLocaleString()}</p>
+                        ) : (
+                            <>
+                                <p className="text-accent font-bold text-xl mb-1 jp-font">{currentItem.kanji}</p>
+                                <p className="text-primary font-medium">{currentItem.romaji}</p>
+                            </>
                         )}
                     </div>
                 </div>
@@ -143,15 +166,15 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
             <div className="w-full">
                 <form onSubmit={handleSubmit} className="relative">
                     <input
-                        type="text"
+                        type={isJpToNum ? 'number' : 'text'}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         disabled={feedback !== 'IDLE'}
-                        placeholder="Type reading..."
+                        placeholder={isJpToNum ? 'Type the number...' : 'Type romaji...'}
                         className={`
-              w-full neu-inset text-primary text-lg font-bold px-6 py-5 outline-none transition-all placeholder:text-secondary/40 placeholder:font-medium
-              ${feedback === 'IDLE' ? '' : feedback === 'CORRECT' ? 'glow-accent text-green-700' : 'shadow-[0_0_15px_rgba(239,68,68,0.4)] text-red-700'}
-            `}
+                            w-full neu-inset text-primary text-lg font-bold px-6 py-5 outline-none transition-all placeholder:text-secondary/40 placeholder:font-medium
+                            ${feedback === 'IDLE' ? '' : feedback === 'CORRECT' ? 'glow-accent text-green-700' : 'shadow-[0_0_15px_rgba(239,68,68,0.4)] text-red-700'}
+                        `}
                         autoFocus
                     />
 
@@ -168,9 +191,9 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                             type="button"
                             onClick={handleNext}
                             className={`
-                absolute right-3 top-1/2 -translate-y-1/2 text-white px-4 py-2.5 rounded-xl font-bold flex items-center shadow-lg transition-all hover:scale-105 active:scale-95
-                ${feedback === 'CORRECT' ? 'bg-green-500 shadow-green-200' : 'bg-red-500 shadow-red-200'}
-              `}
+                                absolute right-3 top-1/2 -translate-y-1/2 text-white px-4 py-2.5 rounded-xl font-bold flex items-center shadow-lg transition-all hover:scale-105 active:scale-95
+                                ${feedback === 'CORRECT' ? 'bg-green-500 shadow-green-200' : 'bg-red-500 shadow-red-200'}
+                            `}
                         >
                             Next <ArrowRight className="w-4 h-4 ml-2" />
                         </button>
@@ -181,4 +204,4 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     );
 };
 
-export default DrillMode;
+export default NumberDrillMode;
