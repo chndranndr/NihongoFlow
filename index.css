@@ -1,0 +1,267 @@
+@import "tailwindcss";
+
+/* ─── Tailwind Theme ─────────────────────────────────────── */
+@theme {
+    --font-sans: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: 'Varela Round', sans-serif;
+    --font-jp: 'Noto Sans JP', sans-serif;
+
+    --color-primary: var(--color-primary);
+    --color-secondary: var(--color-secondary);
+    --color-accent: var(--color-accent);
+    --color-surface: var(--color-surface);
+    --color-border: var(--color-border);
+    --color-card: var(--color-card);
+
+    --shadow-neu: var(--neu-shadow);
+    --shadow-neu-inset: var(--neu-shadow-inset);
+    --shadow-glow: 0 0 20px var(--color-accent);
+    --shadow-glow-sm: 0 0 10px var(--color-accent);
+
+    --animate-fade-in: fadeIn 0.5s ease-out forwards;
+    --animate-fade-in-up: fadeInUp 0.6s ease-out forwards;
+    --animate-scale-in: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    --animate-pulse-glow: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px var(--color-accent);
+    }
+
+    50% {
+        box-shadow: 0 0 30px var(--color-accent), 0 0 50px var(--color-accent);
+    }
+}
+
+/* ─── CSS Variables (Light Mode) ─── */
+:root {
+    --color-primary: rgb(63, 114, 175);
+    --color-secondary: rgb(63, 114, 175);
+    --color-accent: rgb(17, 45, 78);
+    --color-surface: rgb(219, 226, 239);
+    --color-border: rgb(186, 198, 218);
+    --color-card: rgb(233, 237, 244);
+    --bg-color: rgb(249, 247, 247);
+    --text-color: rgb(17, 45, 78);
+    --text-muted: rgb(82, 110, 148);
+
+    --neu-light: rgba(255, 255, 255, 0.8);
+    --neu-dark: rgba(186, 198, 218, 0.5);
+    --neu-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+    --neu-shadow-inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+    --neu-shadow-sm: 3px 3px 6px var(--neu-dark), -3px -3px 6px var(--neu-light);
+}
+
+/* ─── Dark Mode ─── */
+:root.dark {
+    --color-primary: rgb(50, 130, 184);
+    --color-secondary: rgb(50, 130, 184);
+    --color-accent: rgb(187, 225, 250);
+    --color-surface: rgb(15, 76, 117);
+    --color-border: rgb(35, 95, 140);
+    --color-card: rgb(21, 57, 80);
+    --bg-color: rgb(27, 38, 44);
+    --text-color: rgb(187, 225, 250);
+    --text-muted: rgb(130, 180, 215);
+
+    --neu-light: rgba(50, 130, 184, 0.2);
+    --neu-dark: rgba(10, 20, 28, 0.6);
+    --neu-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+    --neu-shadow-inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+    --neu-shadow-sm: 3px 3px 6px var(--neu-dark), -3px -3px 6px var(--neu-light);
+}
+
+/* ─── Base Styles ─── */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Nunito Sans', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Varela Round', sans-serif;
+}
+
+.jp-font {
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* ─── Neumorphism Utilities ─── */
+.neu-raised {
+    background: var(--bg-color);
+    box-shadow: var(--neu-shadow);
+    border-radius: 1rem;
+}
+
+.neu-inset {
+    background: var(--bg-color);
+    box-shadow: var(--neu-shadow-inset);
+    border-radius: 1rem;
+}
+
+.neu-card {
+    background: var(--color-card);
+    box-shadow: var(--neu-shadow);
+    border-radius: 1.5rem;
+    border: 1px solid var(--color-border);
+}
+
+.neu-btn {
+    background: var(--bg-color);
+    box-shadow: var(--neu-shadow-sm);
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.neu-btn:hover {
+    box-shadow: var(--neu-shadow);
+    transform: translateY(-2px);
+}
+
+.neu-btn:active,
+.neu-btn-pressed {
+    box-shadow: var(--neu-shadow-inset);
+    transform: translateY(0);
+}
+
+/* ─── Neon Glow Effects ─── */
+.glow-accent {
+    box-shadow: 0 0 20px var(--color-accent), 0 0 40px var(--color-accent);
+}
+
+.glow-primary {
+    box-shadow: 0 0 20px var(--color-primary), 0 0 40px var(--color-primary);
+}
+
+.neon-text {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+.neon-text-subtle {
+    text-shadow: 0 0 8px currentColor;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ─── Dark Mode Overrides ─── */
+.dark .bg-white {
+    background-color: var(--color-card) !important;
+}
+
+.dark .bg-white\/80 {
+    background-color: rgba(21, 57, 80, 0.8) !important;
+}
+
+.dark .border-border {
+    border-color: var(--color-border) !important;
+}
+
+.dark .bg-surface {
+    background-color: var(--color-surface) !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--text-color);
+}
+
+.dark .bg-green-50 {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+.dark .border-green-100 {
+    border-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+.dark .text-green-800 {
+    color: #86efac !important;
+}
+
+.dark .text-green-600 {
+    color: #4ade80 !important;
+}
+
+.dark .bg-primary {
+    background-color: rgb(50, 130, 184) !important;
+}
+
+.dark .hover\:bg-primary\/90:hover {
+    background-color: rgba(50, 130, 184, 0.9) !important;
+}
+
+.dark .neu-card:hover {
+    box-shadow: var(--neu-shadow), 0 0 30px rgba(50, 130, 184, 0.15);
+}

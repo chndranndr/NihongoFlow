@@ -121,9 +121,9 @@ export function createFullDateItem(date: Date): FullDateItem {
     const year = date.getFullYear();
     const yearJp = yearToJapanese(year);
 
-    const japaneseDisplay = `${dayOfWeek.kanji}、${month.kanji}${dayCounter.kanji} ${year}年`;
-    const hiraganaDisplay = `${dayOfWeek.hiragana}、${month.hiragana}${dayCounter.hiragana} ${year}ねん`;
-    const romajiAnswer = `${dayOfWeek.romaji} ${month.romaji} ${dayCounter.romaji} ${year}nen`;
+    const japaneseDisplay = `${dayOfWeek.kanji}、${month.kanji}${dayCounter.kanji} ${yearJp.kanji}`;
+    const hiraganaDisplay = `${dayOfWeek.hiragana}、${month.hiragana}${dayCounter.hiragana} ${yearJp.hiragana}`;
+    const romajiAnswer = `${dayOfWeek.romaji} ${month.romaji} ${dayCounter.romaji} ${yearJp.romaji}`;
     const englishDisplay = `${dayOfWeek.english}, ${month.english} ${dayCounter.english} ${year}`;
 
     return {

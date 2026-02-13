@@ -13,6 +13,7 @@ const AIGrammarMode: React.FC<AIGrammarModeProps> = ({ level, onBack }) => {
     const [loading, setLoading] = useState(true);
     const [quizState, setQuizState] = useState<'READING' | 'QUIZ' | 'RESULT'>('READING');
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
+    const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
 
     useEffect(() => {
         fetchLesson();
@@ -22,6 +23,7 @@ const AIGrammarMode: React.FC<AIGrammarModeProps> = ({ level, onBack }) => {
         setLoading(true);
         setQuizState('READING');
         setSelectedOption(null);
+        setCurrentQuizIndex(0);
         const data = await generateAIGrammarLesson(level);
         setLesson(data);
         setLoading(false);
@@ -36,6 +38,17 @@ const AIGrammarMode: React.FC<AIGrammarModeProps> = ({ level, onBack }) => {
         setQuizState('RESULT');
     };
 
+    const handleNextQuiz = () => {
+        if (!lesson) return;
+        if (currentQuizIndex < lesson.quiz.length - 1) {
+            setCurrentQuizIndex(currentQuizIndex + 1);
+            setSelectedOption(null);
+            setQuizState('QUIZ');
+        } else {
+            fetchLesson();
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-96 gap-4">
@@ -46,6 +59,8 @@ const AIGrammarMode: React.FC<AIGrammarModeProps> = ({ level, onBack }) => {
     }
 
     if (!lesson) return <div className="text-center p-10 text-secondary">Failed to load lesson.</div>;
+
+    const currentQuiz = lesson.quiz[currentQuizIndex];
 
     return (
         <div className="max-w-2xl mx-auto pb-20 animate-fade-in">
@@ -95,84 +110,93 @@ const AIGrammarMode: React.FC<AIGrammarModeProps> = ({ level, onBack }) => {
                     </section>
 
                     {/* Quiz */}
-                    <section className="pt-6 border-t border-border">
-                        <h3 className="flex items-center text-base font-bold text-primary mb-5">
-                            <HelpCircle className="w-5 h-5 text-accent mr-2" />
-                            Quiz
-                        </h3>
+                    {currentQuiz && (
+                        <section className="pt-6 border-t border-border">
+                            <h3 className="flex items-center justify-between text-base font-bold text-primary mb-5">
+                                <span className="flex items-center">
+                                    <HelpCircle className="w-5 h-5 text-accent mr-2" />
+                                    Quiz
+                                </span>
+                                {lesson.quiz.length > 1 && (
+                                    <span className="text-xs font-semibold text-secondary bg-surface px-3 py-1 rounded-full">
+                                        {currentQuizIndex + 1} / {lesson.quiz.length}
+                                    </span>
+                                )}
+                            </h3>
 
-                        <div className="bg-surface rounded-2xl p-5">
-                            <p className="text-lg font-medium text-primary mb-6 text-center">
-                                {lesson.quiz.question.split('___').map((part, i, arr) => (
-                                    <React.Fragment key={i}>
-                                        {part}
-                                        {i < arr.length - 1 && (
-                                            <span className="inline-block border-b-2 border-secondary w-16 text-center text-accent font-bold px-1 mx-1">
-                                                {selectedOption !== null ? lesson.quiz.options[selectedOption] : '?'}
-                                            </span>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </p>
+                            <div className="bg-surface rounded-2xl p-5">
+                                <p className="text-lg font-medium text-primary mb-6 text-center">
+                                    {currentQuiz.question.split('___').map((part, i, arr) => (
+                                        <React.Fragment key={i}>
+                                            {part}
+                                            {i < arr.length - 1 && (
+                                                <span className="inline-block border-b-2 border-secondary w-16 text-center text-accent font-bold px-1 mx-1">
+                                                    {selectedOption !== null ? currentQuiz.options[selectedOption] : '?'}
+                                                </span>
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                                </p>
 
-                            <div className="grid grid-cols-2 gap-2 mb-5">
-                                {lesson.quiz.options.map((option, idx) => {
-                                    let statusClass = "bg-white border-border hover:border-primary/30";
-                                    if (selectedOption === idx) {
-                                        statusClass = "border-accent bg-accent/5";
-                                    }
-                                    if (quizState === 'RESULT') {
-                                        if (idx === lesson.quiz.correctAnswerIndex) {
-                                            statusClass = "border-green-500 bg-green-50 text-green-700";
-                                        } else if (selectedOption === idx && idx !== lesson.quiz.correctAnswerIndex) {
-                                            statusClass = "border-red-300 bg-red-50 text-red-500 opacity-50";
-                                        } else {
-                                            statusClass = "opacity-40 border-border bg-white";
+                                <div className="grid grid-cols-2 gap-2 mb-5">
+                                    {currentQuiz.options.map((option, idx) => {
+                                        let statusClass = "bg-white border-border hover:border-primary/30";
+                                        if (selectedOption === idx) {
+                                            statusClass = "border-accent bg-accent/5";
                                         }
-                                    }
+                                        if (quizState === 'RESULT') {
+                                            if (idx === currentQuiz.correctAnswerIndex) {
+                                                statusClass = "border-green-500 bg-green-50 text-green-700";
+                                            } else if (selectedOption === idx && idx !== currentQuiz.correctAnswerIndex) {
+                                                statusClass = "border-red-300 bg-red-50 text-red-500 opacity-50";
+                                            } else {
+                                                statusClass = "opacity-40 border-border bg-white";
+                                            }
+                                        }
 
-                                    return (
-                                        <button
-                                            key={idx}
-                                            onClick={() => handleOptionSelect(idx)}
-                                            disabled={quizState === 'RESULT'}
-                                            className={`p-3.5 rounded-xl border-2 transition-all font-medium text-left text-sm ${statusClass}`}
-                                        >
-                                            <span className="inline-flex w-5 h-5 rounded-full bg-surface text-xs items-center justify-center mr-2 font-bold text-secondary">
-                                                {String.fromCharCode(65 + idx)}
-                                            </span>
-                                            {option}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            {quizState !== 'RESULT' ? (
-                                <button
-                                    onClick={checkAnswer}
-                                    disabled={selectedOption === null}
-                                    className="w-full bg-primary text-white py-3.5 rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                >
-                                    Check
-                                </button>
-                            ) : (
-                                <div className={`p-4 rounded-xl flex items-center justify-between ${selectedOption === lesson.quiz.correctAnswerIndex ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                    <div className="flex items-center gap-2">
-                                        {selectedOption === lesson.quiz.correctAnswerIndex ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
-                                        <span className="font-semibold">
-                                            {selectedOption === lesson.quiz.correctAnswerIndex ? 'Correct!' : 'Incorrect'}
-                                        </span>
-                                    </div>
-                                    <button
-                                        onClick={fetchLesson}
-                                        className="px-4 py-2 bg-white rounded-lg text-sm font-semibold text-primary hover:bg-surface flex items-center gap-1"
-                                    >
-                                        New Lesson <ArrowRight className="w-4 h-4" />
-                                    </button>
+                                        return (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleOptionSelect(idx)}
+                                                disabled={quizState === 'RESULT'}
+                                                className={`p-3.5 rounded-xl border-2 transition-all font-medium text-left text-sm ${statusClass}`}
+                                            >
+                                                <span className="inline-flex w-5 h-5 rounded-full bg-surface text-xs items-center justify-center mr-2 font-bold text-secondary">
+                                                    {String.fromCharCode(65 + idx)}
+                                                </span>
+                                                {option}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
-                            )}
-                        </div>
-                    </section>
+
+                                {quizState !== 'RESULT' ? (
+                                    <button
+                                        onClick={checkAnswer}
+                                        disabled={selectedOption === null}
+                                        className="w-full bg-primary text-white py-3.5 rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        Check
+                                    </button>
+                                ) : (
+                                    <div className={`p-4 rounded-xl flex items-center justify-between ${selectedOption === currentQuiz.correctAnswerIndex ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                        <div className="flex items-center gap-2">
+                                            {selectedOption === currentQuiz.correctAnswerIndex ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
+                                            <span className="font-semibold">
+                                                {selectedOption === currentQuiz.correctAnswerIndex ? 'Correct!' : 'Incorrect'}
+                                            </span>
+                                        </div>
+                                        <button
+                                            onClick={handleNextQuiz}
+                                            className="px-4 py-2 bg-white rounded-lg text-sm font-semibold text-primary hover:bg-surface flex items-center gap-1"
+                                        >
+                                            {currentQuizIndex < lesson.quiz.length - 1 ? 'Next Quiz' : 'New Lesson'} <ArrowRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+                    )}
                 </div>
             </div>
         </div>

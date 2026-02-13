@@ -7,7 +7,9 @@ import {
     DateItem,
     DAYS_OF_WEEK
 } from '../dateTimeData';
-import { Check, ArrowRight, X, RotateCcw } from 'lucide-react';
+import { Check, ArrowRight, X, RotateCcw, Sparkles } from 'lucide-react';
+import SpeakerButton from './SpeakerButton';
+import { completeDrill, loadProgress } from '../services/progressService';
 
 interface DateDrillModeProps {
     config: DateDrillConfig;
@@ -23,6 +25,7 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
     const [feedback, setFeedback] = useState<'IDLE' | 'CORRECT' | 'WRONG'>('IDLE');
     const [score, setScore] = useState({ correct: 0, total: 0 });
     const [isComplete, setIsComplete] = useState(false);
+    const [xpEarned, setXpEarned] = useState(0);
 
     const isFullDate = config.mode === 'full-date';
     const isJpToEn = config.direction === 'jp-to-en';
@@ -92,6 +95,10 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
             setFeedback('IDLE');
         } else {
             setIsComplete(true);
+            const prevXP = loadProgress().xp;
+            completeDrill(score.correct, items.length, 'date');
+            const newXP = loadProgress().xp;
+            setXpEarned(newXP - prevXP);
         }
     };
 
@@ -127,9 +134,18 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
                     <p className="text-secondary mb-8">Here's how you performed</p>
 
                     <div className="text-6xl font-bold text-accent mb-4">{percentage}%</div>
-                    <p className="text-primary font-medium mb-8">
+                    <p className="text-primary font-medium mb-4">
                         {score.correct} out of {items.length} correct
                     </p>
+
+                    {xpEarned > 0 && (
+                        <div className="mb-8 py-3 px-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.1), rgba(var(--color-accent-rgb, 168,85,247), 0.1))' }}>
+                            <div className="flex items-center justify-center gap-2">
+                                <Sparkles className="w-5 h-5 text-accent" />
+                                <span className="text-xl font-heading font-bold text-accent">+{xpEarned} XP</span>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="space-y-3">
                         <button
@@ -200,10 +216,13 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
                 );
             } else {
                 return (
-                    <>
-                        <p className="text-accent font-bold text-lg mb-1 jp-font">{fullDateItem.japaneseDisplay}</p>
-                        <p className="text-primary text-sm">{fullDateItem.romajiAnswer}</p>
-                    </>
+                    <div className="flex items-center justify-center gap-2">
+                        <SpeakerButton text={fullDateItem.hiraganaDisplay} size="sm" autoPlay={feedback !== 'IDLE'} />
+                        <div>
+                            <p className="text-accent font-bold text-lg mb-1 jp-font">{fullDateItem.japaneseDisplay}</p>
+                            <p className="text-primary text-sm">{fullDateItem.romajiAnswer}</p>
+                        </div>
+                    </div>
                 );
             }
         } else {
@@ -212,10 +231,13 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
                 return <p className="text-accent font-bold text-xl">{dayItem.english}</p>;
             } else {
                 return (
-                    <>
-                        <p className="text-accent font-bold text-xl mb-1 jp-font">{dayItem.kanji}</p>
-                        <p className="text-primary font-medium">{dayItem.romaji}</p>
-                    </>
+                    <div className="flex items-center justify-center gap-2">
+                        <SpeakerButton text={dayItem.hiragana} size="sm" autoPlay={feedback !== 'IDLE'} />
+                        <div>
+                            <p className="text-accent font-bold text-xl mb-1 jp-font">{dayItem.kanji}</p>
+                            <p className="text-primary font-medium">{dayItem.romaji}</p>
+                        </div>
+                    </div>
                 );
             }
         }
@@ -246,6 +268,15 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
                     ${feedback === 'IDLE' ? 'border-border' : feedback === 'CORRECT' ? 'border-green-500 bg-green-50/10' : 'border-red-500 bg-red-50/10'}
                 `}>
                     {renderDisplay()}
+                    <div className="absolute bottom-3 right-3">
+                        <SpeakerButton
+                            text={isFullDate
+                                ? (currentItem as FullDateItem).hiraganaDisplay
+                                : (currentItem as DateItem).hiragana
+                            }
+                            size="sm"
+                        />
+                    </div>
                 </div>
 
                 {/* Answer Reveal */}

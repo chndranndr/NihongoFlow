@@ -130,7 +130,7 @@ export const generateAIGrammarLesson = async (level: DifficultyLevel): Promise<G
   try {
     const ai = getAIClient();
 
-    const prompt = `Create a unique Japanese grammar lesson for a grammar point suitable for ${level}. Do not use common basic ones like 'wa' or 'no' if possible, try to find something interesting but appropriate for the level. Include an explanation, examples, and a multiple-choice fill-in-the-blank quiz question.`;
+    const prompt = `Create a unique Japanese grammar lesson for a grammar point suitable for ${level}. Do not use common basic ones like 'wa' or 'no' if possible, try to find something interesting but appropriate for the level. Include an explanation, examples, and 3 multiple-choice fill-in-the-blank quiz questions.`;
 
     const grammarSchema = {
       type: Type.OBJECT,
@@ -151,13 +151,16 @@ export const generateAIGrammarLesson = async (level: DifficultyLevel): Promise<G
           },
         },
         quiz: {
-          type: Type.OBJECT,
-          properties: {
-            question: { type: Type.STRING, description: "Quiz sentence with a blank (___)" },
-            options: { type: Type.ARRAY, items: { type: Type.STRING }, description: "4 options" },
-            correctAnswerIndex: { type: Type.INTEGER, description: "Index (0-3) of correct answer" },
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING, description: "Quiz sentence with a blank (___)" },
+              options: { type: Type.ARRAY, items: { type: Type.STRING }, description: "4 options" },
+              correctAnswerIndex: { type: Type.INTEGER, description: "Index (0-3) of correct answer" },
+            },
+            required: ["question", "options", "correctAnswerIndex"],
           },
-          required: ["question", "options", "correctAnswerIndex"],
         },
       },
       required: ["title", "level", "explanation", "examples", "quiz"],

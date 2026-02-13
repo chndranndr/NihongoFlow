@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SRSCard } from '../srsTypes';
 import { loadCards, saveCards, getDueCards, getNewCards, updateCard, updateStreak, calculateStats } from '../services/srsService';
-import { Check, ArrowRight, X, RotateCcw, ArrowLeft, Clock, Zap, Brain } from 'lucide-react';
+import { Check, ArrowRight, X, RotateCcw, ArrowLeft, Clock, Zap, Brain, Sparkles } from 'lucide-react';
+import SpeakerButton from './SpeakerButton';
+import { completeReview, loadProgress } from '../services/progressService';
 
 interface SRSReviewProps {
     onBack: () => void;
@@ -16,6 +18,7 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
     const [feedback, setFeedback] = useState<'IDLE' | 'CORRECT' | 'WRONG'>('IDLE');
     const [isComplete, setIsComplete] = useState(false);
     const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0 });
+    const [xpEarned, setXpEarned] = useState(0);
 
     // Timer for response time tracking
     const startTimeRef = useRef<number>(0);
@@ -72,6 +75,12 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
         } else {
             updateStreak();
             setIsComplete(true);
+            // Award XP for the session
+            const totalReviewed = sessionStats.correct + sessionStats.wrong + 1; // +1 for current
+            const prevXP = loadProgress().xp;
+            completeReview(totalReviewed);
+            const newXP = loadProgress().xp;
+            setXpEarned(newXP - prevXP);
         }
     };
 
@@ -97,9 +106,18 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                             <p className="text-primary font-medium mb-2">
                                 {sessionStats.correct} correct, {sessionStats.wrong} wrong
                             </p>
-                            <p className="text-sm text-secondary mb-8">
+                            <p className="text-sm text-secondary mb-4">
                                 🔥 {stats.streak} day streak
                             </p>
+
+                            {xpEarned > 0 && (
+                                <div className="mb-8 py-3 px-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.1), rgba(var(--color-accent-rgb, 168,85,247), 0.1))' }}>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Sparkles className="w-5 h-5 text-accent" />
+                                        <span className="text-xl font-heading font-bold text-accent">+{xpEarned} XP</span>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <>
@@ -172,8 +190,8 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
             {/* Card Type Badge */}
             <div className="flex justify-center mb-4">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${currentCard.category === 'KANJI'
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-blue-100 text-blue-700'
+                    ? 'bg-purple-100 text-purple-700'
+                    : 'bg-blue-100 text-blue-700'
                     }`}>
                     {currentCard.category}
                 </span>
@@ -189,6 +207,9 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                         }`}>
                         {currentCard.character}
                     </span>
+                    <div className="absolute bottom-3 right-3">
+                        <SpeakerButton text={currentCard.character} size="sm" />
+                    </div>
                 </div>
 
                 {/* Answer Reveal */}
@@ -197,9 +218,12 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                     ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
                 `}>
                     <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-accent font-bold text-lg mb-0.5">{currentCard.primaryReading}</p>
-                            <p className="text-primary font-medium leading-tight">{currentCard.meaning}</p>
+                        <div className="flex items-start gap-2">
+                            <SpeakerButton text={currentCard.primaryReading} size="sm" autoPlay={feedback !== 'IDLE'} />
+                            <div>
+                                <p className="text-accent font-bold text-lg mb-0.5">{currentCard.primaryReading}</p>
+                                <p className="text-primary font-medium leading-tight">{currentCard.meaning}</p>
+                            </div>
                         </div>
                         {currentCard.category === 'KANJI' && (
                             <div className="text-right text-xs text-secondary space-y-0.5">

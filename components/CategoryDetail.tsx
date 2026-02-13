@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DrillItem, DrillCategory } from '../types';
-import { Play, ArrowLeft, Grid } from 'lucide-react';
+import { Play, ArrowLeft, Grid, Volume2 } from 'lucide-react';
+import { speakJapanese } from '../services/ttsService';
 
 interface CategoryDetailProps {
     categoryName: string;
@@ -39,11 +40,16 @@ const CategoryDetail: React.FC<CategoryDetailProps> = ({ categoryName, items, dr
             <div className="bg-white p-6 rounded-3xl border border-border shadow-sm mb-20">
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                     {items.map((item, idx) => (
-                        <div key={idx} className="aspect-square bg-surface rounded-xl flex flex-col items-center justify-center group hover:bg-primary hover:text-white transition-colors cursor-default">
+                        <div
+                            key={idx}
+                            onClick={() => speakJapanese(item.character)}
+                            className="aspect-square bg-surface rounded-xl flex flex-col items-center justify-center group hover:bg-primary hover:text-white transition-colors cursor-pointer relative"
+                        >
                             <span className="text-xl font-bold jp-font mb-1">{item.character}</span>
                             <span className="text-[10px] text-secondary group-hover:text-white/60 font-medium truncate max-w-[90%]">
                                 {item.primaryReading}
                             </span>
+                            <Volume2 className="w-3 h-3 absolute top-1.5 right-1.5 text-secondary/30 group-hover:text-white/50" />
                         </div>
                     ))}
                 </div>

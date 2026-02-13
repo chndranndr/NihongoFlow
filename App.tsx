@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
-import { AppMode, DrillCategory, DifficultyLevel, DrillItem, NumberDrillConfig, DateDrillConfig } from './types';
+import { AppMode, DrillCategory, DifficultyLevel, DrillItem, NumberDrillConfig, DateDrillConfig, ConjugationDrillConfig } from './types';
 import { KANJI_DATA } from './kanjiData';
 import { VOCAB_DATA } from './vocabData';
 import { getApiKey } from './services/geminiService';
 import { loadCards, calculateStats } from './services/srsService';
+import { loadProgress, getXPForLevel, getXPForNextLevel, getN5OverallProgress } from './services/progressService';
 import DrillMode from './components/DrillMode';
 import KanaSelect from './components/KanaSelect';
 import CategorySelect from './components/CategorySelect';
@@ -15,12 +16,17 @@ import KaiwaMode from './components/KaiwaMode';
 import ImageAnalyzer from './components/ImageAnalyzer';
 import SRSReview from './components/SRSReview';
 import SRSStats from './components/SRSStats';
+import ProgressPage from './components/ProgressPage';
+import AchievementToast from './components/AchievementToast';
 import ApiKeyModal from './components/ApiKeyModal';
 import NumberDrillSetup from './components/NumberDrillSetup';
 import NumberDrillMode from './components/NumberDrillMode';
 import DateDrillSetup from './components/DateDrillSetup';
 import DateDrillMode from './components/DateDrillMode';
-import { Book, Languages, Sparkles, ArrowRight, MessageCircle, Settings, ScanLine, ChevronDown, Brain, BarChart3, Moon, Sun, Hash, Calendar } from 'lucide-react';
+import ConjugationDrillSetup from './components/ConjugationDrillSetup';
+import ConjugationDrillMode from './components/ConjugationDrillMode';
+import AboutPage from './components/AboutPage';
+import { Book, Languages, Sparkles, ArrowRight, MessageCircle, Settings, ScanLine, ChevronDown, Brain, BarChart3, Moon, Sun, Hash, Calendar, RefreshCw, Trophy, Flame, Info } from 'lucide-react';
 
 const App: React.FC = () => {
     const [mode, setMode] = useState<AppMode>(AppMode.DASHBOARD);
@@ -37,9 +43,49 @@ const App: React.FC = () => {
     // SRS State
     const [srsDueCount, setSrsDueCount] = useState(0);
 
+    // Gamification State
+    const [achievementToastId, setAchievementToastId] = useState<string | null>(null);
+    const [achievementQueue, setAchievementQueue] = useState<string[]>([]);
+
+    // Show next achievement from queue
+    const showNextAchievement = useCallback(() => {
+        setAchievementQueue(q => {
+            if (q.length > 0) {
+                setAchievementToastId(q[0]);
+                return q.slice(1);
+            }
+            return q;
+        });
+    }, []);
+
+    const handleAchievementUnlock = useCallback((ids: string[]) => {
+        if (ids.length > 0) {
+            setAchievementToastId(ids[0]);
+            if (ids.length > 1) {
+                setAchievementQueue(ids.slice(1));
+            }
+        }
+    }, []);
+
+    const handleToastDismiss = useCallback(() => {
+        setAchievementToastId(null);
+        setTimeout(showNextAchievement, 300);
+    }, [showNextAchievement]);
+
+    // Listen for achievement events from progressService
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const ids = (e as CustomEvent<string[]>).detail;
+            handleAchievementUnlock(ids);
+        };
+        window.addEventListener('nihongoflow-achievement', handler);
+        return () => window.removeEventListener('nihongoflow-achievement', handler);
+    }, [handleAchievementUnlock]);
+
     // Number and Date Drill State
     const [numberDrillConfig, setNumberDrillConfig] = useState<NumberDrillConfig | null>(null);
     const [dateDrillConfig, setDateDrillConfig] = useState<DateDrillConfig | null>(null);
+    const [conjugationDrillConfig, setConjugationDrillConfig] = useState<ConjugationDrillConfig | null>(null);
 
     // Dark Mode State
     const [isDark, setIsDark] = useState(() => {
@@ -143,6 +189,10 @@ const App: React.FC = () => {
         setMode(AppMode.SRS_STATS);
     };
 
+    const handleStartProgress = () => {
+        setMode(AppMode.PROGRESS);
+    };
+
     const handleStartNumberDrill = () => {
         setMode(AppMode.NUMBER_DRILL_SETUP);
     };
@@ -161,6 +211,15 @@ const App: React.FC = () => {
         setMode(AppMode.DATE_DRILL);
     };
 
+    const handleStartConjugationDrill = () => {
+        setMode(AppMode.CONJUGATION_DRILL_SETUP);
+    };
+
+    const handleConjugationDrillConfig = (config: ConjugationDrillConfig) => {
+        setConjugationDrillConfig(config);
+        setMode(AppMode.CONJUGATION_DRILL);
+    };
+
     // Load SRS due count when on dashboard
     useEffect(() => {
         if (mode === AppMode.DASHBOARD) {
@@ -174,6 +233,11 @@ const App: React.FC = () => {
 
     return (
         <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
+
+            <AchievementToast
+                achievementId={achievementToastId}
+                onDismiss={handleToastDismiss}
+            />
 
             <ApiKeyModal
                 isOpen={isSettingsOpen}
@@ -234,7 +298,7 @@ const App: React.FC = () => {
                     <div className="animate-fade-in-up">
 
                         {/* Hero - Retro-Futurism */}
-                        <div className="text-center mb-16">
+                        <div className="text-center mb-10">
                             <h1 className="text-5xl md:text-6xl font-heading font-bold text-primary tracking-tight mb-4 neon-text-subtle">
                                 日本語
                             </h1>
@@ -242,6 +306,50 @@ const App: React.FC = () => {
                                 Master Japanese through focused practice
                             </p>
                         </div>
+
+                        {/* Progress Banner */}
+                        {(() => {
+                            const prog = loadProgress();
+                            const currentXP = getXPForLevel(prog.level);
+                            const nextXP = getXPForNextLevel(prog.level);
+                            const pct = nextXP > currentXP ? Math.min(100, ((prog.xp - currentXP) / (nextXP - currentXP)) * 100) : 100;
+                            const n5p = getN5OverallProgress();
+                            return (
+                                <button
+                                    onClick={handleStartProgress}
+                                    className="w-full mb-10 p-5 rounded-2xl text-left group transition-all duration-300 hover:shadow-glow-sm"
+                                    style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}
+                                >
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                                                <Trophy className="w-5 h-5 text-white" />
+                                            </div>
+                                            <div>
+                                                <span className="text-white/70 text-xs font-bold uppercase tracking-wider">Lv.{prog.level}</span>
+                                                <span className="text-white font-heading font-bold ml-2">{prog.xp.toLocaleString()} XP</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {prog.streak > 0 && (
+                                                <div className="flex items-center gap-1 bg-white/20 backdrop-blur px-2.5 py-1 rounded-lg">
+                                                    <Flame className="w-4 h-4 text-orange-300" />
+                                                    <span className="text-white text-sm font-bold">{prog.streak}</span>
+                                                </div>
+                                            )}
+                                            <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </div>
+                                    </div>
+                                    <div className="h-2 rounded-full overflow-hidden bg-white/20 mb-1.5">
+                                        <div className="h-full rounded-full bg-white/80 transition-all duration-700" style={{ width: `${pct}%` }} />
+                                    </div>
+                                    <div className="flex justify-between text-xs text-white/50 font-medium">
+                                        <span>N5 Progress: {n5p}%</span>
+                                        <span>View Progress →</span>
+                                    </div>
+                                </button>
+                            );
+                        })()}
 
                         {/* Practice Section */}
                         <section className="mb-16">
@@ -318,6 +426,21 @@ const App: React.FC = () => {
                                     </div>
                                     <h3 className="text-lg font-heading font-bold text-primary mb-1">Dates</h3>
                                     <p className="text-sm text-secondary font-medium mb-4">Days & full dates</p>
+                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                                        Start <ArrowRight className="w-4 h-4 ml-1" />
+                                    </div>
+                                </button>
+
+                                {/* Conjugation */}
+                                <button
+                                    onClick={handleStartConjugationDrill}
+                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
+                                >
+                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
+                                        <RefreshCw className="w-6 h-6 text-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Conjugation</h3>
+                                    <p className="text-sm text-secondary font-medium mb-4">Verbs & adjectives</p>
                                     <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                                         Start <ArrowRight className="w-4 h-4 ml-1" />
                                     </div>
@@ -527,6 +650,12 @@ const App: React.FC = () => {
                     />
                 )}
 
+                {mode === AppMode.PROGRESS && (
+                    <ProgressPage
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                    />
+                )}
+
                 {mode === AppMode.NUMBER_DRILL_SETUP && (
                     <NumberDrillSetup
                         onStart={handleNumberDrillConfig}
@@ -555,11 +684,37 @@ const App: React.FC = () => {
                     />
                 )}
 
+                {mode === AppMode.CONJUGATION_DRILL_SETUP && (
+                    <ConjugationDrillSetup
+                        onStart={handleConjugationDrillConfig}
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                    />
+                )}
+
+                {mode === AppMode.CONJUGATION_DRILL && conjugationDrillConfig && (
+                    <ConjugationDrillMode
+                        config={conjugationDrillConfig}
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                    />
+                )}
+
+                {mode === AppMode.ABOUT && (
+                    <AboutPage
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                    />
+                )}
+
             </main>
 
-            {/* Footer - Minimal */}
+            {/* Footer */}
             <footer className="py-12 text-center">
-                <p className="text-xs text-secondary font-medium tracking-wide">NihongoFlow</p>
+                <button
+                    onClick={() => setMode(AppMode.ABOUT)}
+                    className="inline-flex items-center gap-1.5 text-xs text-secondary font-medium tracking-wide hover:text-primary transition-colors"
+                >
+                    <Info className="w-3.5 h-3.5" />
+                    About NihongoFlow
+                </button>
             </footer>
         </div>
     );

@@ -15,6 +15,10 @@ export enum AppMode {
   NUMBER_DRILL = 'NUMBER_DRILL',
   DATE_DRILL_SETUP = 'DATE_DRILL_SETUP',
   DATE_DRILL = 'DATE_DRILL',
+  CONJUGATION_DRILL_SETUP = 'CONJUGATION_DRILL_SETUP',
+  CONJUGATION_DRILL = 'CONJUGATION_DRILL',
+  PROGRESS = 'PROGRESS',
+  ABOUT = 'ABOUT',
 }
 
 export enum DrillCategory {
@@ -23,6 +27,7 @@ export enum DrillCategory {
   VOCAB = 'VOCAB',
   NUMBERS = 'NUMBERS',
   DATES = 'DATES',
+  CONJUGATION = 'CONJUGATION',
 }
 
 // Number drill direction
@@ -44,6 +49,22 @@ export interface DateDrillConfig {
   direction: DateDrillDirection;
   startYear?: number;
   endYear?: number;
+  itemCount: number;
+}
+
+// Conjugation drill config
+export type ConjugationWordType = 'verb' | 'adjective';
+export type ConjugationVerbType = 'godan' | 'ichidan' | 'irregular';
+export type ConjugationAdjType = 'i-adjective' | 'na-adjective';
+export type ConjugationFormType =
+  | 'masu' | 'te' | 'negative' | 'past' | 'past-negative'
+  | 'potential' | 'volitional' | 'imperative' | 'conditional' | 'tai';
+
+export interface ConjugationDrillConfig {
+  wordType: ConjugationWordType;
+  verbTypes: ConjugationVerbType[];
+  adjectiveTypes: ConjugationAdjType[];
+  forms: ConjugationFormType[];
   itemCount: number;
 }
 
@@ -78,7 +99,7 @@ export interface GrammarLesson {
     question: string;
     options: string[]; // 4 options
     correctAnswerIndex: number;
-  };
+  }[];
 }
 
 export interface ChatMessage {

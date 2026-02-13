@@ -12,6 +12,7 @@
     "android": "npm run build && cap sync android && cap open android"
   },
   "dependencies": {
+    "@capacitor-community/text-to-speech": "^8.0.0",
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.3",
     "@capacitor/core": "^6.0.0",
@@ -23,8 +24,10 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.0.0",
+    "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.1.18",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

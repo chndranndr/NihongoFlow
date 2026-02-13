@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DrillCategory, DrillItem } from '../types';
-import { Check, ArrowRight, X, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Check, ArrowRight, X, RotateCcw, ArrowLeft, Sparkles } from 'lucide-react';
+import SpeakerButton from './SpeakerButton';
+import { completeDrill, loadProgress, XP_REWARDS } from '../services/progressService';
 
 interface DrillModeProps {
     category: DrillCategory;
@@ -15,6 +17,7 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     const [score, setScore] = useState({ correct: 0, total: 0 });
     const [shuffledItems, setShuffledItems] = useState<DrillItem[]>([]);
     const [isComplete, setIsComplete] = useState(false);
+    const [xpEarned, setXpEarned] = useState(0);
 
     useEffect(() => {
         // Simple shuffle
@@ -45,6 +48,11 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
             setFeedback('IDLE');
         } else {
             setIsComplete(true);
+            // Award XP — score.correct is already updated from handleSubmit
+            const prevXP = loadProgress().xp;
+            completeDrill(score.correct, items.length, category);
+            const newXP = loadProgress().xp;
+            setXpEarned(newXP - prevXP);
         }
     };
 
@@ -66,9 +74,18 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                     <p className="text-secondary mb-8">Here's how you performed</p>
 
                     <div className="text-6xl font-bold text-accent mb-4 neon-text-subtle">{percentage}%</div>
-                    <p className="text-primary font-medium mb-8">
+                    <p className="text-primary font-medium mb-4">
                         {score.correct} out of {items.length} correct
                     </p>
+
+                    {xpEarned > 0 && (
+                        <div className="mb-8 py-3 px-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.1), rgba(var(--color-accent-rgb, 168,85,247), 0.1))' }}>
+                            <div className="flex items-center justify-center gap-2">
+                                <Sparkles className="w-5 h-5 text-accent" />
+                                <span className="text-xl font-heading font-bold text-accent">+{xpEarned} XP</span>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="space-y-3">
                         <button
@@ -117,6 +134,9 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                         }`}>
                         {currentItem.character}
                     </span>
+                    <div className="absolute bottom-3 right-3">
+                        <SpeakerButton text={currentItem.character} size="sm" />
+                    </div>
                 </div>
 
                 {/* Answer Reveal */}
@@ -125,9 +145,12 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
           ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
         `}>
                     <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-accent font-bold text-lg mb-0.5">{currentItem.primaryReading}</p>
-                            <p className="text-primary font-medium leading-tight">{currentItem.meaning}</p>
+                        <div className="flex items-start gap-2">
+                            <SpeakerButton text={currentItem.primaryReading} size="sm" autoPlay={feedback !== 'IDLE'} />
+                            <div>
+                                <p className="text-accent font-bold text-lg mb-0.5">{currentItem.primaryReading}</p>
+                                <p className="text-primary font-medium leading-tight">{currentItem.meaning}</p>
+                            </div>
                         </div>
                         {category === DrillCategory.KANJI && (
                             <div className="text-right text-xs text-secondary space-y-0.5">
@@ -177,7 +200,7 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                     )}
                 </form>
             </div>
-        </div>
+        </div >
     );
 };
 

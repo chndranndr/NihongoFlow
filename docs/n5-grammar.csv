@@ -1,0 +1,73 @@
+No,Kategori,Pola Grammar,Arti,Penjelasan,Contoh Kalimat (Jepang),Contoh Kalimat (Indonesia)
+1,Kata Sifat,Kata Sifat-i (Positif),~i desu,Bentuk positif sopan.,おもしろいです,Menarik.
+2,Kata Sifat,Kata Sifat-i (Negatif),~ku arimasen / ~ku nai desu,Bentuk negatif sopan.,おもしろく ありません,Tidak menarik.
+3,Kata Sifat,Kata Sifat-i (Lampau),~katta desu,Bentuk lampau positif.,おもしろかったです,Dulu menarik (tadi menarik).
+4,Kata Sifat,Kata Sifat-i (Lampau Negatif),~ku arimasen deshita / ~ku nakatta desu,Bentuk lampau negatif.,おもしろく なかったです,Dulu tidak menarik.
+5,Kata Sifat,Pengecualian: いい (Bagus),Yoi / Yoku,Kata 'ii' berubah menjadi 'yoi' atau 'yoku' saat dikonjugasi.,よくないです / よかったです,Tidak bagus / Bagus (lampau).
+6,Kata Sifat,Kata Sifat-na (Positif),~desu,Bentuk positif sopan.,きれいです,Cantik / Bersih.
+7,Kata Sifat,Kata Sifat-na (Negatif),~dewa arimasen / ~ja nai desu,Bentuk negatif sopan (dewa = ja).,きれいじゃ ないです,Tidak cantik.
+8,Kata Sifat,Kata Sifat-na (Lampau),~deshita,Bentuk lampau positif.,きれいでした,Dulu cantik.
+9,Kata Sifat,Kata Sifat-na (Lampau Negatif),~dewa arimasen deshita / ~ja nakatta desu,Bentuk lampau negatif.,きれいじゃ なかったです,Dulu tidak cantik.
+10,Kata Benda,Menerangkan Kata Benda (Sifat-i),K. Sifat-i + K. Benda,Langsung digabungkan.,高い山,Gunung yang tinggi.
+11,Kata Benda,Menerangkan Kata Benda (Sifat-na),K. Sifat-na + na + K. Benda,Perlu menambahkan partikel 'na'.,きれいな海,Laut yang indah.
+12,Kata Benda,Menerangkan Kata Benda (Benda),K. Benda + no + K. Benda,Menyatakan kepemilikan, buatan, atau asal.,日本の車,Mobil Jepang / Mobil buatan Jepang.
+13,Partikel,Partikel の (Pengganti),~no,~ punya / ~ yang...,Menggantikan kata benda yang sudah disebutkan sebelumnya.,A: これ誰のですか B: 田中さんのです,A: Ini punya siapa? B: Punya Pak Tanaka.
+14,Keberadaan,Imasu,Ada (untuk makhluk hidup),Untuk manusia dan hewan.,この クラスに 中国人が ５人 います,Di kelas ini ada 5 orang China.
+15,Keberadaan,Arimasu,Ada (untuk benda mati),Untuk benda mati dan tumbuhan. Konteks bisa berarti 'punya'.,傘が ありますか,Apakah ada payung? (Punya payung?)
+16,Keberadaan,Lokasi keberadaan,(Tempat) ni (Subjek) ga Arimasu/Imasu,Di (Tempat) ada (Subjek).,れいぞうこの 中に ケーキが あります,Di dalam kulkas ada kue.
+17,Partikel,Partikel は (Topik),~wa,Adalah / Sebagai penanda topik,Menjelaskan topik pembicaraan.,わたしは カナダから 来ました,Saya datang dari Kanada.
+18,Partikel,Partikel は (Perbandingan),~wa ... ~wa,Yang ini ..., tapi yang itu ...,Membandingkan dua hal (kontras).,肉は 食べますが、魚は 食べません,Daging saya makan, tapi ikan tidak saya makan.
+19,Partikel,Pola A wa B ga,A wa B ga ~,Mendeskripsikan ciri khas/bagian dari topik A.,象は 鼻が 長いです (Gajah hidungnya panjang),兄は 背が 高いです (Kakak laki-laki badannya tinggi).
+20,Partikel,Partikel が (Kata Tanya),Kata Tanya + ga,Penanda subjek untuk kata tanya.,Digunakan ketika subjeknya adalah kata tanya.,どれが 田中さんの コップですか,Yang mana gelasnya Pak Tanaka?
+21,Partikel,Partikel を (Objek),~o,Objek penderita,Digunakan pada objek dari kata kerja transitif.,辞書を 借ります,Meminjam kamus.
+22,Partikel,Partikel を (Tempat),~o (Verba Perpindahan),Melewati / Mengelilingi,Digunakan bersama kata kerja perpindahan (jalan, lari, terbang, belok).,公園を 散歩します,Jalan-jalan di taman.
+23,Partikel,Partikel と,~to,Dan / Bersama,Menghubungkan kata benda atau menyatakan kebersamaan.,母と 買い物しました,Berbelanja bersama Ibu.
+24,Partikel,Partikel に (Waktu),~ni,Pada (waktu),Menunjukkan waktu spesifik.,８時に 来て ください,Tolong datang pada jam 8.
+25,Partikel,Partikel に (Tujuan/Tempat),~ni,Ke / Di,Menunjukkan tujuan pergerakan atau lokasi keberadaan.,会社に 入ります,Masuk ke perusahaan.
+26,Partikel,Partikel で (Tempat Aktivitas),~de,Di (tempat melakukan aksi),Menunjukkan tempat terjadinya kegiatan.,日本で 働いて います,Bekerja di Jepang.
+27,Partikel,Partikel で (Cara/Alat),~de,Dengan / Menggunakan / Naik,Menunjukkan alat atau cara transportasi.,電車で 行きます,Pergi menggunakan (naik) kereta.
+28,Partikel,Partikel も,~mo,Juga / Pun,Menggantikan wa/ga/o untuk arti 'juga'.,わたしも パーティーに 行きます,Saya juga pergi ke pesta.
+29,Partikel,Partikel も (Negatif),~mo ... ~masen,Tidak ... satupun / Sama sekali tidak,Digunakan dalam kalimat negatif.,何も 食べませんでした,Tidak makan apa-apa.
+30,Partikel,Partikel か,~ka,Atau,Pilihan antara dua hal.,コーヒーか 紅茶,Kopi atau teh hitam.
+31,Partikel,Partikel や,~ya,Dan lain-lain (seperti),Menyebutkan contoh perwakilan (tidak lengkap).,コンビニや 銀行などが あります,Ada toserba, bank, dan lain-lain.
+32,Partikel,Partikel から、まで,~kara, ~made,Dari, Sampai,Menunjukkan titik awal dan akhir (waktu/tempat).,テストは 15日から 18日までです,Ujian dari tanggal 15 sampai tanggal 18.
+33,Sufiks,Goro / Gurai / Dake,~goro / ~gurai / ~dake,Kira-kira (waktu) / Kira-kira (jumlah) / Hanya,Goro untuk titik waktu, Gurai untuk durasi/jumlah.,７時ごろ / 1000円ぐらい / 日よう日だけ,Kira-kira jam 7 / Kira-kira 1000 yen / Hanya hari Minggu.
+34,Kata Tanya,Daftar Kata Tanya,Dare/Nani/Doko/Itsu/Douyatte,Siapa/Apa/Dimana/Kapan/Bagaimana,Termasuk bentuk sopan (Donata) dan variasi (Dochira).,国は どちらですか,Negara Anda di mana?
+35,Kata Tanya,Kata Tanya + ka,~ka,Sesuatu / Seseorang / Suatu tempat,Membentuk kata benda tak tentu.,何か 食べましょう,Ayo makan sesuatu.
+36,Kata Tanya,Kata Tanya + demo,~demo,Apa pun / Siapa pun / Kapan pun,Menyatakan 'setiap' atau 'bebas'.,いつでも 来て ください,Silakan datang kapan pun.
+37,Penghubung,Menghubungkan Kata Sifat-i,~kute,Dan (sifat-i),Mengganti 'i' dengan 'kute'.,安くて、おいしいです,Murah dan enak.
+38,Penghubung,Menghubungkan Sifat-na/Benda,~de,Dan (sifat-na/benda),Menambahkan 'de' setelah kata.,きれいで、やさしいです,Cantik dan baik hati.
+39,Penghubung,Menghubungkan Kata Kerja (Urutan),V-te,Lalu / Dan,Menyatakan urutan kegiatan.,朝 起きて、シャワーを 浴びて...,Pagi bangun, lalu mandi shower...
+40,Kata Kerja,V-te kara,V-te kara,Setelah (melakukan V),Menyatakan aksi setelah aksi lain selesai.,手を洗ってから、ご飯を食べましょう,Setelah cuci tangan, mari makan nasi.
+41,Keinginan,Ingin Benda,K. Benda + ga hoshii desu,Ingin (benda),Menyatakan keinginan memiliki sesuatu.,わたしは ねこが ほしいです,Saya ingin kucing.
+42,Keinginan,Ingin Melakukan,V-masu + tai desu,Ingin (melakukan),Menyatakan keinginan melakukan aktivitas.,ステーキが 食べたいです,Ingin makan steak.
+43,Kata Kerja,Sedang Berlangsung / Keadaan,V-te imasu,Sedang... / Dalam keadaan...,Menyatakan aksi yang sedang terjadi atau status (seperti menikah/tinggal).,今 ピアノを ひいて います,Sekarang sedang bermain piano.
+44,Kata Kerja,Permintaan,V-te kudasai,Tolong...,Meminta seseorang melakukan sesuatu.,ペンを 貸して ください,Tolong pinjamkan pulpen.
+45,Kata Kerja,Larangan (Permintaan Negatif),V-naide kudasai,Tolong jangan...,Meminta seseorang tidak melakukan sesuatu.,ここで 写真を 撮らないで ください,Tolong jangan ambil foto di sini.
+46,Memberi Menerima,Moraimasu,(Ni/Kara) Moraimasu,Menerima dari...,Subjek menerima barang.,父から 時計を もらいました,Menerima jam dari Ayah.
+47,Memberi Menerima,Agemasu,(Ni) Agemasu,Memberi kepada...,Subjek memberi barang (bukan ke saya).,友だちに チョコレートを あげます,Memberi cokelat kepada teman.
+48,Memberi Menerima,Kuremasu,(Ga) Kuremasu,Memberi (kepada saya),Orang lain memberi ke pembicara.,友だちが チョコレートを くれました,Teman memberi saya cokelat.
+49,Ajakan,Mashou,~mashou,Ayo...,Mengajak melakukan sesuatu.,歩きましょう,Ayo berjalan kaki.
+50,Ajakan,Mashou ka,~mashou ka,Bisakah/Maukah/Bagaimana kalau saya...?,Menawarkan bantuan atau mengajak.,手伝いましょうか,Mau saya bantu?
+51,Ajakan,Masen ka,~masen ka,Maukah tidak...? (Ajakan sopan),Mengajak dengan sopan.,行きませんか,Maukah pergi (bersama)?
+52,Anak Kalimat,Modifikasi Kata Benda,Kalimat (Bentuk Biasa) + Kata Benda,Yang...,Menerangkan kata benda dengan kalimat.,父が 働いている 会社,Perusahaan tempat ayah bekerja.
+53,Penghubung Kalimat,Sebab Akibat,~kara / ~node,Karena...,Alasan diletakkan sebelum 'kara'.,暑いから、窓を 開けましょう,Karena panas, ayo buka jendela.
+54,Penghubung Kalimat,Tapi,~ga / ~kedo,Tetapi...,Menghubungkan dua kalimat bertentangan.,難しいですが、おもしろいです,Sulit, tapi menarik.
+55,Kata Keterangan,Tingkat (Degree),Totemo / Amari / Zenzen,Sangat / Tidak begitu / Sama sekali tidak,Amari dan Zenzen diikuti bentuk negatif.,日本語が とても 上手ですね,Bahasa Jepangnya sangat pandai ya.
+56,Kata Keterangan,Frekuensi,Itsumo / Tokidoki / Yoku,Selalu / Kadang-kadang / Sering,,この 店は いつも こんで います,Toko ini selalu penuh.
+57,Kata Keterangan,Waktu,Mou / Mada,Sudah / Belum,,もう 食べましたか,Apakah sudah makan?
+58,Perubahan,Adverbia (Sifat + Kerja),Sifat-i (~ku) / Sifat-na (~ni) + V,Melakukan dengan (sifat),Mengubah kata sifat menjadi kata keterangan.,野菜を 小さく 切って ください,Tolong potong sayurnya (menjadi) kecil-kecil.
+59,Perubahan,Menjadi (Narimasu),~ku / ~ni narimasu,Menjadi...,Perubahan keadaan.,天気が よく なりました,Cuaca menjadi bagus.
+60,Keputusan,Membuat/Memilih (Shimasu),~ku / ~ni shimasu,Membuat jadi... / Memilih...,Memutuskan pilihan atau mengubah kondisi.,ラーメンに します,Saya pilih ramen (saat pesan makan).
+61,Pola Kalimat,Toki (Waktu),~toki,Saat / Ketika...,Menyatakan waktu kejadian.,本を 読む とき、メガネを かけます,Saat membaca buku, saya memakai kacamata.
+62,Pola Kalimat,Maeni (Sebelum),V-kamus / N-no + maeni,Sebelum...,Urutan waktu sebelum aksi.,寝る 前に、歯を 磨きます,Sebelum tidur, menggosok gigi.
+63,Pola Kalimat,Ato de (Sesudah),V-ta / N-no + ato de,Setelah...,Urutan waktu setelah aksi.,勉強の あとで、ゲームを します,Setelah belajar, bermain game.
+64,Tujuan,Pergi untuk...,V-masu (buang masu) + ni ikimasu,Pergi untuk (melakukan),Menyatakan tujuan pergerakan.,映画を 見に 行きます,Pergi untuk menonton film.
+65,Perbandingan,Lebih dari,A wa B yori ~ desu,A lebih ~ daripada B,,父は 母より 料理が 上手です,Ayah lebih jago masak daripada Ibu.
+66,Perbandingan,Yang mana (Pilihan),A to B to dochira ga ~ desu ka,Antara A dan B, mana yang lebih ~?,,犬と 猫と どちらが 好きですか,Antara anjing dan kucing, mana yang lebih suka?
+67,Perbandingan,Paling (Superlatif),~ ga ichiban ~ desu,Yang paling ~,,富士山が 日本で 一番 高い山です,Gunung Fuji adalah gunung paling tinggi di Jepang.
+68,Pola Kalimat,Tari-tari (Representasi),~tari ~tari shimasu,Melakukan A, melakukan B, dll,Menyebutkan beberapa kegiatan acak.,本を 読んだり、テレビを 見たり します,Membaca buku, menonton TV, dll.
+69,Nominalisasi,Membendakan Kata Kerja,V-kamus + koto / no,Hal (melakukan V),Mengubah kata kerja menjadi kata benda agar bisa jadi subjek/objek.,私の 趣味は 映画を 見る ことです,Hobi saya adalah menonton film.
+70,Potensial,Bisa (Benda),N + ga dekimasu,Bisa (kata benda),,スキーが できます,Bisa ski.
+71,Potensial,Bisa (Kerja),V-kamus + koto ga dekimasu,Bisa melakukan (kata kerja),,漢字を 読む ことが できます,Bisa membaca Kanji.
+72,Potensial,Kata Kerja Potensial,V-eru / rareru,Bisa (Konjugasi Kata Kerja),Perubahan bentuk kata kerja langsung.,漢字が 少し 読めます,Bisa membaca sedikit Kanji.
