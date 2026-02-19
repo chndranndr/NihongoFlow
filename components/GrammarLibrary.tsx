@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GRAMMAR_LIBRARY } from '../grammarData';
+import { GRAMMAR_LIBRARY } from '../data/grammar';
 import { GrammarLesson } from '../types';
 import { ChevronRight, HelpCircle, CheckCircle, XCircle, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import SpeakerButton from './SpeakerButton';

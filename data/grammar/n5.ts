@@ -1,6 +1,7 @@
-import { GrammarLesson } from './types';
+import { GrammarLesson } from '../../types';
 
-export const GRAMMAR_LIBRARY: GrammarLesson[] = [
+// JLPT N5 Grammar Lessons
+export const GRAMMAR_N5: GrammarLesson[] = [
   // ═══════════════════════════════════════════════════════
   // SECTION 1: BASIC SENTENCE STRUCTURE & COPULA
   // ═══════════════════════════════════════════════════════

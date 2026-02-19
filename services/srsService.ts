@@ -1,8 +1,8 @@
 // SRS Service - SM-2 Algorithm Implementation with Timer-Based Quality
 import { SRSCard, SRSStats, SRSQuality, FAST_ANSWER_THRESHOLD_MS } from '../srsTypes';
 import { DrillItem, DrillCategory } from '../types';
-import { KANJI_DATA } from '../kanjiData';
-import { VOCAB_DATA } from '../vocabData';
+import { KANJI_DATA } from '../data/kanji';
+import { VOCAB_DATA } from '../data/vocab';
 
 const SRS_STORAGE_KEY = 'nihongoflow-srs';
 const STATS_STORAGE_KEY = 'nihongoflow-srs-stats';

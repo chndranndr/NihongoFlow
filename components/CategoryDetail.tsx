@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DrillItem, DrillCategory } from '../types';
-import { Play, ArrowLeft, Grid, Volume2 } from 'lucide-react';
+import { Play, ArrowLeft, Volume2 } from 'lucide-react';
 import { speakJapanese } from '../services/ttsService';
 
 interface CategoryDetailProps {
@@ -36,20 +36,19 @@ const CategoryDetail: React.FC<CategoryDetailProps> = ({ categoryName, items, dr
                 </div>
             </div>
 
-            {/* Grid Preview */}
-            <div className="bg-white p-6 rounded-3xl border border-border shadow-sm mb-20">
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+            {/* List Preview */}
+            <div className="bg-white rounded-3xl border border-border shadow-sm mb-20 overflow-hidden">
+                <div className="divide-y divide-border">
                     {items.map((item, idx) => (
                         <div
                             key={idx}
                             onClick={() => speakJapanese(item.character)}
-                            className="aspect-square bg-surface rounded-xl flex flex-col items-center justify-center group hover:bg-primary hover:text-white transition-colors cursor-pointer relative"
+                            className="grid grid-cols-[minmax(6rem,1fr)_1fr_1fr_auto] items-center gap-4 px-5 py-3.5 group hover:bg-primary hover:text-white transition-colors cursor-pointer"
                         >
-                            <span className="text-xl font-bold jp-font mb-1">{item.character}</span>
-                            <span className="text-[10px] text-secondary group-hover:text-white/60 font-medium truncate max-w-[90%]">
-                                {item.primaryReading}
-                            </span>
-                            <Volume2 className="w-3 h-3 absolute top-1.5 right-1.5 text-secondary/30 group-hover:text-white/50" />
+                            <span className="text-2xl font-bold jp-font text-center">{item.character}</span>
+                            <span className="text-sm font-semibold text-primary group-hover:text-white">{item.primaryReading}</span>
+                            <span className="text-xs text-secondary group-hover:text-white/60">{item.meaning}</span>
+                            <Volume2 className="w-4 h-4 text-secondary/30 group-hover:text-white/50 shrink-0" />
                         </div>
                     ))}
                 </div>

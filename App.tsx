@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
 import { AppMode, DrillCategory, DifficultyLevel, DrillItem, NumberDrillConfig, DateDrillConfig, ConjugationDrillConfig } from './types';
-import { KANJI_DATA } from './kanjiData';
-import { VOCAB_DATA } from './vocabData';
+import { KANJI_DATA } from './data/kanji';
+import { VOCAB_DATA } from './data/vocab';
 import { getApiKey } from './services/geminiService';
 import { loadCards, calculateStats } from './services/srsService';
 import { loadProgress, getXPForLevel, getXPForNextLevel, getN5OverallProgress } from './services/progressService';
