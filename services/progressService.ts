@@ -7,7 +7,7 @@
 import { loadCards } from './srsService';
 
 // ─── Storage ────────────────────────────────────────────
-const PROGRESS_KEY = 'nihongoflow-progress';
+const PROGRESS_KEY = 'kita-progress';
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -168,7 +168,7 @@ function yesterdayStr(): string {
 
 function dispatchAchievements(ids: string[]): void {
     if (ids.length > 0) {
-        window.dispatchEvent(new CustomEvent('nihongoflow-achievement', { detail: ids }));
+        window.dispatchEvent(new CustomEvent('kita-achievement', { detail: ids }));
     }
 }
 
@@ -296,8 +296,8 @@ export function completeGrammarQuiz(lessonId: string): string[] {
 
 // Total items per JLPT level (from data files)
 const JLPT_TOTALS = {
-    N5: { kanji: 78, vocab: 90, grammar: 72 },
-    N4: { kanji: 70, vocab: 0, grammar: 0 },
+    N5: { kanji: 88, vocab: 644, grammar: 72 },
+    N4: { kanji: 41, vocab: 0, grammar: 0 },
 };
 
 /**

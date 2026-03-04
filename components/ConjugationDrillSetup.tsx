@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { ConjugationDrillConfig, ConjugationWordType, ConjugationVerbType, ConjugationAdjType, ConjugationFormType } from '../types';
 import { ArrowLeft, ArrowRight, BookOpen, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
-import { VERB_FORMS, ADJECTIVE_FORMS, GODAN_VERBS, ICHIDAN_VERBS, IRREGULAR_VERBS, I_ADJECTIVES, NA_ADJECTIVES, Verb, Adjective } from '../conjugationData';
+import { VERB_FORMS, ADJECTIVE_FORMS } from '../conjugationData';
+import { VOCAB_N5 } from '../data/vocab/n5';
 
 interface ConjugationDrillSetupProps {
     onStart: (config: ConjugationDrillConfig) => void;
@@ -53,17 +54,17 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
 
     // Compute filtered word list based on selections
     const filteredWords = useMemo(() => {
+        const allItems = Object.values(VOCAB_N5).flat();
         if (wordType === 'verb') {
-            const words: Verb[] = [];
-            if (verbTypes.includes('godan')) words.push(...GODAN_VERBS);
-            if (verbTypes.includes('ichidan')) words.push(...ICHIDAN_VERBS);
-            if (verbTypes.includes('irregular')) words.push(...IRREGULAR_VERBS);
-            return words;
+            return allItems.filter(item =>
+                item.category === 'verb' && item.verbCategory && item.reading &&
+                verbTypes.includes(item.verbCategory as ConjugationVerbType)
+            );
         } else {
-            const words: Adjective[] = [];
-            if (adjectiveTypes.includes('i-adjective')) words.push(...I_ADJECTIVES);
-            if (adjectiveTypes.includes('na-adjective')) words.push(...NA_ADJECTIVES);
-            return words;
+            return allItems.filter(item =>
+                (item.category === 'i-adjective' || item.category === 'na-adjective') && item.reading &&
+                adjectiveTypes.includes(item.category as ConjugationAdjType)
+            );
         }
     }, [wordType, verbTypes, adjectiveTypes]);
 
@@ -239,27 +240,29 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredWords.map((word, idx) => (
-                                    <tr key={idx} className="border-t border-border/50 hover:bg-surface/30">
-                                        <td className="px-4 py-2 jp-font text-primary font-medium">{word.dictionary}</td>
-                                        <td className="px-4 py-2 jp-font text-secondary">{word.reading}</td>
-                                        <td className="px-4 py-2 text-secondary">{word.meaning}</td>
-                                        <td className="px-4 py-2">
-                                            <span className={`text-xs px-2 py-1 rounded-full ${word.type === 'godan' ? 'bg-blue-100 text-blue-700' :
-                                                word.type === 'ichidan' ? 'bg-green-100 text-green-700' :
-                                                    word.type === 'irregular' ? 'bg-orange-100 text-orange-700' :
-                                                        word.type === 'i-adjective' ? 'bg-purple-100 text-purple-700' :
-                                                            'bg-pink-100 text-pink-700'
-                                                }`}>
-                                                {word.type === 'godan' ? '五段' :
-                                                    word.type === 'ichidan' ? '一段' :
-                                                        word.type === 'irregular' ? '不規則' :
-                                                            word.type === 'i-adjective' ? 'い形' :
-                                                                'な形'}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredWords.map((item, idx) => {
+                                    const typeKey = wordType === 'verb' ? item.verbCategory : item.category;
+                                    return (
+                                        <tr key={idx} className="border-t border-border/50 hover:bg-surface/30">
+                                            <td className="px-4 py-2 jp-font text-primary font-medium">{item.character}</td>
+                                            <td className="px-4 py-2 jp-font text-secondary">{item.reading}</td>
+                                            <td className="px-4 py-2 text-secondary">{item.meaning}</td>
+                                            <td className="px-4 py-2">
+                                                <span className={`text-xs px-2 py-1 rounded-full ${typeKey === 'godan' ? 'bg-blue-100 text-blue-700' :
+                                                        typeKey === 'ichidan' ? 'bg-green-100 text-green-700' :
+                                                            typeKey === 'irregular' ? 'bg-orange-100 text-orange-700' :
+                                                                typeKey === 'i-adjective' ? 'bg-purple-100 text-purple-700' :
+                                                                    'bg-pink-100 text-pink-700'
+                                                    }`}>
+                                                    {typeKey === 'godan' ? '五段' :
+                                                        typeKey === 'ichidan' ? '一段' :
+                                                            typeKey === 'irregular' ? '不規則' :
+                                                                typeKey === 'i-adjective' ? 'い形' : 'な形'}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

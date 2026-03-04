@@ -1,5 +1,5 @@
 {
-  "name": "NihongoFlow",
+  "name": "Kita",
   "description": "A smart, AI-powered Japanese learning assistant focusing on Kana, Kanji, Vocabulary drills, interactive Grammar lessons, and AI Conversation.",
   "requestFramePermissions": [
     "microphone"

@@ -19,6 +19,7 @@ export enum AppMode {
   CONJUGATION_DRILL = 'CONJUGATION_DRILL',
   PROGRESS = 'PROGRESS',
   ABOUT = 'ABOUT',
+  VIDEO_STUDY = 'VIDEO_STUDY',
 }
 
 export enum DrillCategory {
@@ -58,7 +59,7 @@ export type ConjugationVerbType = 'godan' | 'ichidan' | 'irregular';
 export type ConjugationAdjType = 'i-adjective' | 'na-adjective';
 export type ConjugationFormType =
   | 'masu' | 'te' | 'negative' | 'past' | 'past-negative'
-  | 'potential' | 'volitional' | 'imperative' | 'conditional' | 'tai';
+  | 'potential' | 'passive' | 'volitional' | 'imperative' | 'polite-imperative' | 'conditional' | 'tai';
 
 export interface ConjugationDrillConfig {
   wordType: ConjugationWordType;
@@ -74,15 +75,38 @@ export enum DifficultyLevel {
   ADVANCED = 'Advanced (N2/N1)',
 }
 
+// Word category (part of speech)
+export type WordCategory =
+  | 'noun'
+  | 'verb'
+  | 'i-adjective'
+  | 'na-adjective'
+  | 'adverb'
+  | 'particle'
+  | 'conjunction'
+  | 'counter'
+  | 'expression'
+  | 'prefix'
+  | 'suffix'
+  | 'interjection'
+  | 'pronoun'
+  | 'other';
+
+// Verb conjugation class
+export type VerbCategory = 'godan' | 'ichidan' | 'irregular';
+
 export interface DrillItem {
   id?: string;
   character: string; // The main display (Kanji, Kana, or Word)
+  reading?: string;  // Hiragana reading (used for conjugation engine stem operations)
   primaryReading: string; // Expected romaji answer
   alternateReadings?: string[]; // Other acceptable romaji
   meaning: string;
   onyomi?: string[];
   kunyomi?: string[];
   example?: string;
+  category?: WordCategory;      // Part of speech (verb, noun, adjective, etc.)
+  verbCategory?: VerbCategory;  // Verb conjugation class (only for verbs)
 }
 
 export interface GrammarLesson {
@@ -107,4 +131,38 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
   timestamp: number;
+}
+
+// Video Study types
+export interface SubtitleCue {
+  index: number;
+  startTime: number;  // seconds
+  endTime: number;    // seconds
+  text: string;       // original Japanese text
+}
+
+export type GrammarPOS =
+  | 'noun' | 'verb' | 'adjective' | 'adverb'
+  | 'particle' | 'auxiliary' | 'conjunction'
+  | 'interjection' | 'other';
+
+export interface GrammarToken {
+  text: string;
+  pos: GrammarPOS;
+}
+
+export interface EnrichedCue extends SubtitleCue {
+  furigana: string;   // full hiragana reading
+  romaji: string;
+  translation: string;
+  tokens?: GrammarToken[]; // optional — present only after enrichment
+}
+
+export interface VideoEntry {
+  id: string;
+  title: string;
+  youtubeId: string;
+  cues: EnrichedCue[];
+  subtitleOffset: number; // ms offset (+ = delay subs, - = advance subs)
+  createdAt: number;
 }

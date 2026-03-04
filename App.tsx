@@ -26,7 +26,8 @@ import DateDrillMode from './components/DateDrillMode';
 import ConjugationDrillSetup from './components/ConjugationDrillSetup';
 import ConjugationDrillMode from './components/ConjugationDrillMode';
 import AboutPage from './components/AboutPage';
-import { Book, Languages, Sparkles, ArrowRight, MessageCircle, Settings, ScanLine, ChevronDown, Brain, BarChart3, Moon, Sun, Hash, Calendar, RefreshCw, Trophy, Flame, Info } from 'lucide-react';
+import VideoStudyMode from './components/VideoStudyMode';
+import { Book, Languages, Sparkles, ArrowRight, MessageCircle, Settings, ScanLine, ChevronDown, Brain, BarChart3, Moon, Sun, Hash, Calendar, RefreshCw, Trophy, Flame, Info, Film } from 'lucide-react';
 
 const App: React.FC = () => {
     const [mode, setMode] = useState<AppMode>(AppMode.DASHBOARD);
@@ -78,8 +79,8 @@ const App: React.FC = () => {
             const ids = (e as CustomEvent<string[]>).detail;
             handleAchievementUnlock(ids);
         };
-        window.addEventListener('nihongoflow-achievement', handler);
-        return () => window.removeEventListener('nihongoflow-achievement', handler);
+        window.addEventListener('kita-achievement', handler);
+        return () => window.removeEventListener('kita-achievement', handler);
     }, [handleAchievementUnlock]);
 
     // Number and Date Drill State
@@ -100,10 +101,10 @@ const App: React.FC = () => {
         setIsDark(newDark);
         if (newDark) {
             document.documentElement.classList.add('dark');
-            localStorage.setItem('nihongoflow-theme', 'dark');
+            localStorage.setItem('kita-theme', 'dark');
         } else {
             document.documentElement.classList.remove('dark');
-            localStorage.setItem('nihongoflow-theme', 'light');
+            localStorage.setItem('kita-theme', 'light');
         }
     };
 
@@ -181,6 +182,10 @@ const App: React.FC = () => {
         checkKeyAndProceed(AppMode.IMAGE_ANALYZER);
     };
 
+    const handleStartVideoStudy = () => {
+        checkKeyAndProceed(AppMode.VIDEO_STUDY);
+    };
+
     const handleStartSRSReview = () => {
         setMode(AppMode.SRS_REVIEW);
     };
@@ -244,52 +249,54 @@ const App: React.FC = () => {
                 onClose={() => setIsSettingsOpen(false)}
             />
 
-            {/* Header - Neumorphic */}
-            <header className="sticky top-0 z-50 backdrop-blur-xl" style={{ backgroundColor: 'var(--bg-color)' }}>
-                <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <button
-                        className="flex items-center gap-2 group"
-                        onClick={() => setMode(AppMode.DASHBOARD)}
-                    >
-                        <div className="w-9 h-9 neu-btn flex items-center justify-center group-hover:glow-primary transition-all" style={{ background: 'var(--color-primary)' }}>
-                            <Languages className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-heading font-bold text-xl text-primary tracking-tight neon-text-subtle">NihongoFlow</span>
-                    </button>
+            {/* Header - Only on Dashboard */}
+            {mode === AppMode.DASHBOARD && (
+                <header className="sticky top-0 z-50 backdrop-blur-xl" style={{ backgroundColor: 'var(--bg-color)' }}>
+                    <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+                        <button
+                            className="flex items-center gap-2 group"
+                            onClick={() => setMode(AppMode.DASHBOARD)}
+                        >
+                            <div className="w-9 h-9 neu-btn flex items-center justify-center group-hover:glow-primary transition-all" style={{ background: 'var(--color-primary)' }}>
+                                <Languages className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="font-heading font-bold text-xl text-primary tracking-tight neon-text-subtle">キタ</span>
+                        </button>
 
-                    <div className="flex items-center gap-3">
-                        <div className="relative">
-                            <select
-                                value={selectedLevel}
-                                onChange={(e) => setSelectedLevel(e.target.value as DifficultyLevel)}
-                                className="appearance-none neu-btn text-sm font-semibold text-primary rounded-xl pl-4 pr-9 py-2.5 cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-accent/30"
-                                style={{ background: 'var(--bg-color)' }}
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <select
+                                    value={selectedLevel}
+                                    onChange={(e) => setSelectedLevel(e.target.value as DifficultyLevel)}
+                                    className="appearance-none neu-btn text-sm font-semibold text-primary rounded-xl pl-4 pr-9 py-2.5 cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-accent/30"
+                                    style={{ background: 'var(--bg-color)' }}
+                                >
+                                    {Object.values(DifficultyLevel).map(level => (
+                                        <option key={level} value={level}>{level}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-secondary absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
+
+                            <button
+                                onClick={toggleDarkMode}
+                                className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-accent transition-all"
+                                title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                             >
-                                {Object.values(DifficultyLevel).map(level => (
-                                    <option key={level} value={level}>{level}</option>
-                                ))}
-                            </select>
-                            <ChevronDown className="w-4 h-4 text-secondary absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            </button>
+
+                            <button
+                                onClick={() => setIsSettingsOpen(true)}
+                                className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-primary transition-all"
+                                title="Settings"
+                            >
+                                <Settings className="w-5 h-5" />
+                            </button>
                         </div>
-
-                        <button
-                            onClick={toggleDarkMode}
-                            className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-accent transition-all"
-                            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                        >
-                            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                        </button>
-
-                        <button
-                            onClick={() => setIsSettingsOpen(true)}
-                            className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-primary transition-all"
-                            title="Settings"
-                        >
-                            <Settings className="w-5 h-5" />
-                        </button>
                     </div>
-                </div>
-            </header>
+                </header>
+            )}
 
             {/* Main Content */}
             <main className="max-w-4xl mx-auto px-6 py-12">
@@ -297,13 +304,13 @@ const App: React.FC = () => {
                 {mode === AppMode.DASHBOARD && (
                     <div className="animate-fade-in-up">
 
-                        {/* Hero - Retro-Futurism */}
+                        {/* Hero */}
                         <div className="text-center mb-10">
-                            <h1 className="text-5xl md:text-6xl font-heading font-bold text-primary tracking-tight mb-4 neon-text-subtle">
-                                日本語
+                            <h1 className="text-5xl md:text-6xl font-heading font-bold text-primary tracking-tight mb-3 neon-text-subtle">
+                                鍛えよう。
                             </h1>
-                            <p className="text-lg text-secondary max-w-md mx-auto font-medium">
-                                Master Japanese through focused practice
+                            <p className="text-base text-secondary max-w-md mx-auto font-medium tracking-widest uppercase">
+                                Kitaeyou.
                             </p>
                         </div>
 
@@ -529,6 +536,23 @@ const App: React.FC = () => {
                                         <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
                                     </div>
                                 </button>
+
+                                {/* Video Study */}
+                                <button
+                                    onClick={handleStartVideoStudy}
+                                    className="group text-left p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-glow" style={{ background: 'linear-gradient(135deg, var(--color-secondary), var(--color-accent))' }}
+                                >
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                                                <Film className="w-5 h-5 text-white" />
+                                            </div>
+                                            <h3 className="text-lg font-heading font-bold text-white mb-1">Video Study</h3>
+                                            <p className="text-sm text-white/60 font-medium">Learn from videos</p>
+                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
+                                    </div>
+                                </button>
                             </div>
                         </section>
 
@@ -704,6 +728,12 @@ const App: React.FC = () => {
                     />
                 )}
 
+                {mode === AppMode.VIDEO_STUDY && (
+                    <VideoStudyMode
+                        onBack={() => setMode(AppMode.DASHBOARD)}
+                    />
+                )}
+
             </main>
 
             {/* Footer */}
@@ -713,7 +743,7 @@ const App: React.FC = () => {
                     className="inline-flex items-center gap-1.5 text-xs text-secondary font-medium tracking-wide hover:text-primary transition-colors"
                 >
                     <Info className="w-3.5 h-3.5" />
-                    About NihongoFlow
+                    About キタ
                 </button>
             </footer>
         </div>

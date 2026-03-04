@@ -4,8 +4,8 @@ import { DrillItem, DrillCategory } from '../types';
 import { KANJI_DATA } from '../data/kanji';
 import { VOCAB_DATA } from '../data/vocab';
 
-const SRS_STORAGE_KEY = 'nihongoflow-srs';
-const STATS_STORAGE_KEY = 'nihongoflow-srs-stats';
+const SRS_STORAGE_KEY = 'kita-srs';
+const STATS_STORAGE_KEY = 'kita-srs-stats';
 
 // Default ease factor for new cards
 const DEFAULT_EASE_FACTOR = 2.5;
@@ -114,12 +114,32 @@ export function initializeAllCards(): SRSCard[] {
     return cards;
 }
 
-// Load SRS cards from localStorage
+/**
+ * Merge any newly-added data items into an existing card set.
+ * Preserves all review progress for cards that already exist.
+ * Only appends cards whose IDs are not yet in `existingCards`.
+ */
+export function syncNewCards(existingCards: SRSCard[]): SRSCard[] {
+    const allCards = initializeAllCards();
+    const existingIds = new Set(existingCards.map(c => c.id));
+    const newCards = allCards.filter(c => !existingIds.has(c.id));
+    if (newCards.length === 0) return existingCards;
+    console.log(`[SRS] Syncing ${newCards.length} new card(s) from updated data.`);
+    return [...existingCards, ...newCards];
+}
+
+// Load SRS cards from localStorage, merging any new data items automatically
 export function loadCards(): SRSCard[] {
     try {
         const stored = localStorage.getItem(SRS_STORAGE_KEY);
         if (stored) {
-            return JSON.parse(stored);
+            const existing: SRSCard[] = JSON.parse(stored);
+            // Merge in any cards that appear in the data files but not in storage
+            const synced = syncNewCards(existing);
+            if (synced.length !== existing.length) {
+                saveCards(synced);
+            }
+            return synced;
         }
     } catch (e) {
         console.error('Failed to load SRS cards:', e);

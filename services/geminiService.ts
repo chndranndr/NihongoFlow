@@ -210,3 +210,129 @@ export const startKaiwaSession = (level: DifficultyLevel, scenario: string): Cha
     }
   });
 };
+
+/**
+ * Enriches Japanese subtitle lines with furigana, romaji, translation, and POS-tagged tokens.
+ * Processes all lines in a single batch call for efficiency.
+ */
+export const enrichSubtitles = async (lines: string[]): Promise<{
+  furigana: string;
+  romaji: string;
+  translation: string;
+  tokens: { text: string; pos: string }[];
+}[]> => {
+  const ai = getAIClient();
+
+  const prompt = `You are a Japanese language expert. For each Japanese subtitle line below, provide:
+1. furigana: The full reading in hiragana (convert all kanji to hiragana)
+2. romaji: The romanized reading (Hepburn romanization)
+3. translation: A natural English translation
+4. tokens: Break the line into grammatical tokens. For each token provide:
+   - text: the token as it appears in the original line
+   - pos: one of exactly these values: "noun", "verb", "adjective", "adverb", "particle", "auxiliary", "conjunction", "interjection", "other"
+   Tokenize at the morpheme level (e.g., split particles from nouns), but keep verb stems+conjugation endings together.
+
+Here are the subtitle lines:
+${lines.map((line, i) => `${i + 1}. ${line}`).join('\n')}
+
+Return an array with exactly ${lines.length} items, in the same order.`;
+
+  const tokenSchema = {
+    type: Type.OBJECT,
+    properties: {
+      text: { type: Type.STRING, description: "Token text as it appears in the original" },
+      pos: {
+        type: Type.STRING,
+        description: "Part of speech: noun | verb | adjective | adverb | particle | auxiliary | conjunction | interjection | other",
+      },
+    },
+    required: ["text", "pos"],
+  };
+
+  const schema = {
+    type: Type.ARRAY,
+    items: {
+      type: Type.OBJECT,
+      properties: {
+        furigana: { type: Type.STRING, description: "Full hiragana reading" },
+        romaji: { type: Type.STRING, description: "Hepburn romanization" },
+        translation: { type: Type.STRING, description: "Natural English translation" },
+        tokens: { type: Type.ARRAY, items: tokenSchema, description: "POS-tagged morpheme tokens" },
+      },
+      required: ["furigana", "romaji", "translation", "tokens"],
+    },
+  };
+
+  const response = await ai.models.generateContent({
+    model: TEXT_MODEL_NAME,
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: schema,
+      temperature: 0.2,
+    },
+  });
+
+  const text = response.text;
+  if (!text) throw new Error("No response from Gemini");
+
+  return JSON.parse(text) as { furigana: string; romaji: string; translation: string; tokens: { text: string; pos: string }[] }[];
+};
+
+/**
+ * Transcribes Japanese audio from a YouTube video URL using Gemini.
+ * Returns timestamped subtitle cues ready for enrichment.
+ */
+export const transcribeYouTubeVideo = async (youtubeUrl: string): Promise<{ index: number; startTime: number; endTime: number; text: string }[]> => {
+  const ai = getAIClient();
+
+  const prompt = `Listen to the Japanese audio in this video and transcribe it with timestamps.
+
+Rules:
+- Transcribe ALL spoken Japanese dialogue verbatim, in Japanese script (kanji + kana as appropriate)
+- Split into natural sentence/phrase segments (not too long, aim for subtitle-length chunks)
+- Provide accurate start and end timestamps in seconds (as decimal numbers, e.g. 5.2)
+- Skip non-speech audio (music, sound effects) — only transcribe spoken words
+- If there is no Japanese speech, return an empty array
+
+Return an ordered array of segments.`;
+
+  const schema = {
+    type: Type.ARRAY,
+    items: {
+      type: Type.OBJECT,
+      properties: {
+        index: { type: Type.INTEGER, description: "Sequential segment number starting from 1" },
+        startTime: { type: Type.NUMBER, description: "Start time in seconds" },
+        endTime: { type: Type.NUMBER, description: "End time in seconds" },
+        text: { type: Type.STRING, description: "Transcribed Japanese text" },
+      },
+      required: ["index", "startTime", "endTime", "text"],
+    },
+  };
+
+  const response = await ai.models.generateContent({
+    model: TEXT_MODEL_NAME,
+    contents: {
+      parts: [
+        {
+          fileData: {
+            mimeType: 'video/*',
+            fileUri: youtubeUrl,
+          },
+        } as any,
+        { text: prompt },
+      ],
+    },
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: schema,
+      temperature: 0.1,
+    },
+  });
+
+  const text = response.text;
+  if (!text) throw new Error("No transcription returned from Gemini");
+
+  return JSON.parse(text) as { index: number; startTime: number; endTime: number; text: string }[];
+};

@@ -25,9 +25,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                     className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
                     style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}
                 >
-                    <span className="text-4xl font-bold text-white jp-font">流</span>
+                    <span className="text-4xl font-bold text-white jp-font">鍛</span>
                 </div>
-                <h2 className="text-2xl font-heading font-bold text-primary mb-1">NihongoFlow</h2>
+                <h2 className="text-2xl font-heading font-bold text-primary mb-1">キタ</h2>
                 <p className="text-sm text-secondary font-medium mb-3">Version 1.0.0</p>
                 <p className="text-sm text-secondary max-w-sm mx-auto leading-relaxed">
                     A smart, AI-powered Japanese learning assistant focusing on Kana, Kanji,
@@ -108,7 +108,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
 
             {/* Footer */}
             <p className="text-center text-xs text-secondary mt-8 font-medium">
-                © {new Date().getFullYear()} NihongoFlow. All rights reserved.
+                © {new Date().getFullYear()} キタ. All rights reserved.
             </p>
         </div>
     );

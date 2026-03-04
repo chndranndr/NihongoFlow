@@ -16,9 +16,9 @@ function assert(condition: boolean, msg: string) { if (!condition) throw new Err
 
 // ─── Imports ───────────────────────────────────────────────────────────
 import { KANA_DATA } from '../../../../kanaData';
-import { KANJI_DATA } from '../../../../kanjiData';
-import { VOCAB_DATA } from '../../../../vocabData';
-import { GRAMMAR_LIBRARY } from '../../../../grammarData';
+import { KANJI_DATA } from '../../../../data/kanji/index';
+import { VOCAB_DATA } from '../../../../data/vocab/index';
+import { GRAMMAR_LIBRARY } from '../../../../data/grammar/index';
 
 // ═══════════════════════════════════════════════════════════════════════
 console.log('\n🧪 DATA INTEGRITY TESTS\n');
@@ -158,14 +158,16 @@ test('All grammar lessons have required fields', () => {
 
 test('All grammar quizzes have valid structure', () => {
     for (const lesson of GRAMMAR_LIBRARY) {
-        const q = lesson.quiz;
-        assert(!!q, `Grammar lesson "${lesson.id}" missing quiz`);
-        assert(!!q.question, `Grammar lesson "${lesson.id}" quiz missing question`);
-        assert(Array.isArray(q.options), `Grammar lesson "${lesson.id}" quiz options not an array`);
-        assert(q.options.length === 4, `Grammar lesson "${lesson.id}" quiz should have exactly 4 options, has ${q.options.length}`);
-        assert(typeof q.correctAnswerIndex === 'number', `Grammar lesson "${lesson.id}" quiz correctAnswerIndex is not a number`);
-        assert(q.correctAnswerIndex >= 0 && q.correctAnswerIndex <= 3,
-            `Grammar lesson "${lesson.id}" quiz correctAnswerIndex out of range: ${q.correctAnswerIndex}`);
+        const quizzes = lesson.quiz;
+        assert(Array.isArray(quizzes) && quizzes.length > 0, `Grammar lesson "${lesson.id}" missing quiz array`);
+        for (const q of quizzes) {
+            assert(!!q.question, `Grammar lesson "${lesson.id}" quiz item missing question`);
+            assert(Array.isArray(q.options), `Grammar lesson "${lesson.id}" quiz options not an array`);
+            assert(q.options.length === 4, `Grammar lesson "${lesson.id}" quiz should have 4 options, has ${q.options.length}`);
+            assert(typeof q.correctAnswerIndex === 'number', `Grammar lesson "${lesson.id}" quiz correctAnswerIndex not a number`);
+            assert(q.correctAnswerIndex >= 0 && q.correctAnswerIndex <= 3,
+                `Grammar lesson "${lesson.id}" quiz correctAnswerIndex out of range: ${q.correctAnswerIndex}`);
+        }
     }
 });
 
