@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DrillCategory, DrillItem } from '../types';
-import { Check, ArrowRight, X, RotateCcw, ArrowLeft, Sparkles } from 'lucide-react';
+import { Check, ArrowRight, X, RotateCcw, Sparkles } from 'lucide-react';
 import SpeakerButton from './SpeakerButton';
-import { completeDrill, loadProgress, XP_REWARDS } from '../services/progressService';
+import { completeDrill, loadProgress } from '../services/progressService';
 
 interface DrillModeProps {
     category: DrillCategory;
@@ -20,7 +20,6 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     const [xpEarned, setXpEarned] = useState(0);
 
     useEffect(() => {
-        // Simple shuffle
         setShuffledItems([...items].sort(() => Math.random() - 0.5));
     }, [items]);
 
@@ -48,7 +47,6 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
             setFeedback('IDLE');
         } else {
             setIsComplete(true);
-            // Award XP — score.correct is already updated from handleSubmit
             const prevXP = loadProgress().xp;
             completeDrill(score.correct, items.length, category);
             const newXP = loadProgress().xp;
@@ -68,18 +66,26 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     if (!currentItem || isComplete) {
         const percentage = Math.round((score.correct / items.length) * 100);
         return (
-            <div className="max-w-md mx-auto text-center py-12 animate-fade-in-up">
-                <div className="neu-card p-8">
-                    <h2 className="text-3xl font-heading font-bold text-primary mb-2 neon-text-subtle">Drill Complete</h2>
-                    <p className="text-secondary mb-8">Here's how you performed</p>
+            <div className="max-w-md mx-auto py-8 animate-fade-in-up">
+                <div className="glass-card p-8 text-center">
+                    <div className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        {percentage >= 80 ? (
+                            <Sparkles className="w-10 h-10 text-white" />
+                        ) : (
+                            <Check className="w-10 h-10 text-white" />
+                        )}
+                    </div>
+                    
+                    <h2 className="text-2xl font-heading font-bold text-primary mb-2">Drill Complete!</h2>
+                    <p className="text-muted mb-8">Here's how you performed</p>
 
-                    <div className="text-6xl font-bold text-accent mb-4 neon-text-subtle">{percentage}%</div>
-                    <p className="text-primary font-medium mb-4">
+                    <div className="text-7xl font-bold gradient-text mb-2">{percentage}%</div>
+                    <p className="text-secondary font-medium mb-6">
                         {score.correct} out of {items.length} correct
                     </p>
 
                     {xpEarned > 0 && (
-                        <div className="mb-8 py-3 px-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.1), rgba(var(--color-accent-rgb, 168,85,247), 0.1))' }}>
+                        <div className="mb-8 py-4 px-6 rounded-2xl gradient-bg-soft border border-accent/20">
                             <div className="flex items-center justify-center gap-2">
                                 <Sparkles className="w-5 h-5 text-accent" />
                                 <span className="text-xl font-heading font-bold text-accent">+{xpEarned} XP</span>
@@ -90,13 +96,13 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                     <div className="space-y-3">
                         <button
                             onClick={handleRetry}
-                            className="w-full py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center hover:shadow-glow" style={{ background: 'var(--color-primary)' }}
+                            className="btn-primary w-full flex items-center justify-center gap-2"
                         >
-                            <RotateCcw className="w-5 h-5 mr-2" /> Practice Again
+                            <RotateCcw className="w-5 h-5" /> Practice Again
                         </button>
                         <button
                             onClick={onBack}
-                            className="w-full neu-btn py-4 text-primary font-bold transition-all"
+                            className="btn-secondary w-full"
                         >
                             Back to Dashboard
                         </button>
@@ -107,55 +113,60 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
     }
 
     return (
-        <div className="max-w-md mx-auto h-[calc(100vh-140px)] flex flex-col justify-between py-4 animate-fade-in">
+        <div className="max-w-md mx-auto min-h-[calc(100vh-180px)] flex flex-col animate-fade-in">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <button onClick={onBack} className="text-secondary hover:text-primary transition-colors">
-                    <X className="w-6 h-6" />
+            <div className="flex items-center gap-4 mb-6">
+                <button 
+                    onClick={onBack} 
+                    className="btn-icon shrink-0"
+                >
+                    <X className="w-5 h-5" />
                 </button>
-                <div className="flex-1 mx-6 h-1.5 bg-surface rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-surface rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-accent transition-all duration-500 ease-out"
+                        className="h-full gradient-bg transition-all duration-500 ease-out"
                         style={{ width: `${((currentIndex + 1) / shuffledItems.length) * 100}%` }}
                     />
                 </div>
-                <span className="text-xs font-bold text-secondary tabular-nums">
+                <span className="text-sm font-semibold text-secondary tabular-nums shrink-0">
                     {currentIndex + 1} / {shuffledItems.length}
                 </span>
             </div>
 
             {/* Card */}
-            <div className="flex-1 flex flex-col items-center justify-center mb-8 relative">
+            <div className="flex-1 flex flex-col items-center justify-center mb-6 relative">
                 <div className={`
-          w-full aspect-square neu-card flex items-center justify-center p-8 transition-all duration-300
-          ${feedback === 'IDLE' ? '' : feedback === 'CORRECT' ? 'glow-accent' : 'shadow-[0_0_20px_rgba(239,68,68,0.5)]'}
-        `}>
-                    <span className={`text-[8rem] font-bold jp-font leading-none ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-600' : 'text-red-500'
-                        }`}>
+                    w-full aspect-square glass-card flex items-center justify-center p-8 transition-all duration-300
+                    ${feedback === 'CORRECT' ? 'shadow-[0_0_40px_rgba(34,197,94,0.4)] border-green-400/50' : ''}
+                    ${feedback === 'WRONG' ? 'shadow-[0_0_40px_rgba(239,68,68,0.4)] border-red-400/50' : ''}
+                `}>
+                    <span className={`text-[7rem] md:text-[8rem] font-bold jp-font leading-none transition-colors duration-300
+                        ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-500' : 'text-red-500'}
+                    `}>
                         {currentItem.character}
                     </span>
-                    <div className="absolute bottom-3 right-3">
-                        <SpeakerButton text={currentItem.character} size="sm" />
+                    <div className="absolute bottom-4 right-4">
+                        <SpeakerButton text={currentItem.character} size="md" />
                     </div>
                 </div>
 
                 {/* Answer Reveal */}
                 <div className={`
-          absolute -bottom-6 w-[90%] neu-card p-4 transition-all duration-300 transform
-          ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
-        `}>
-                    <div className="flex justify-between items-start">
-                        <div className="flex items-start gap-2">
+                    absolute -bottom-4 w-[92%] glass-strong rounded-2xl p-5 transition-all duration-300
+                    ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
+                `}>
+                    <div className="flex justify-between items-start gap-4">
+                        <div className="flex items-start gap-3">
                             <SpeakerButton text={currentItem.primaryReading} size="sm" autoPlay={feedback !== 'IDLE'} />
                             <div>
-                                <p className="text-accent font-bold text-lg mb-0.5">{currentItem.primaryReading}</p>
-                                <p className="text-primary font-medium leading-tight">{currentItem.meaning}</p>
+                                <p className="text-accent font-bold text-xl mb-1">{currentItem.primaryReading}</p>
+                                <p className="text-primary font-medium">{currentItem.meaning}</p>
                             </div>
                         </div>
                         {category === DrillCategory.KANJI && (
-                            <div className="text-right text-xs text-secondary space-y-0.5">
-                                {currentItem.onyomi && <p><span className="font-semibold">On:</span> {currentItem.onyomi.join(', ')}</p>}
-                                {currentItem.kunyomi && <p><span className="font-semibold">Kun:</span> {currentItem.kunyomi.join(', ')}</p>}
+                            <div className="text-right text-xs text-muted space-y-1">
+                                {currentItem.onyomi && <p><span className="font-semibold text-secondary">On:</span> {currentItem.onyomi.join(', ')}</p>}
+                                {currentItem.kunyomi && <p><span className="font-semibold text-secondary">Kun:</span> {currentItem.kunyomi.join(', ')}</p>}
                             </div>
                         )}
                     </div>
@@ -163,7 +174,7 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
             </div>
 
             {/* Input Area */}
-            <div className="w-full">
+            <div className="w-full pt-8">
                 <form onSubmit={handleSubmit} className="relative">
                     <input
                         type="text"
@@ -172,9 +183,10 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                         disabled={feedback !== 'IDLE'}
                         placeholder="Type reading..."
                         className={`
-              w-full neu-inset text-primary text-lg font-bold px-6 py-5 outline-none transition-all placeholder:text-secondary/40 placeholder:font-medium
-              ${feedback === 'IDLE' ? '' : feedback === 'CORRECT' ? 'glow-accent text-green-700' : 'shadow-[0_0_15px_rgba(239,68,68,0.4)] text-red-700'}
-            `}
+                            input-glass text-lg font-semibold pr-14
+                            ${feedback === 'CORRECT' ? 'border-green-400 text-green-600' : ''}
+                            ${feedback === 'WRONG' ? 'border-red-400 text-red-500' : ''}
+                        `}
                         autoFocus
                     />
 
@@ -182,7 +194,7 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                         <button
                             type="submit"
                             disabled={!input.trim()}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-primary text-white p-2.5 rounded-xl disabled:opacity-0 disabled:scale-95 transition-all hover:scale-105 active:scale-95"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-xl gradient-bg text-white flex items-center justify-center disabled:opacity-0 disabled:scale-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
                         >
                             <Check className="w-5 h-5" />
                         </button>
@@ -191,16 +203,16 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                             type="button"
                             onClick={handleNext}
                             className={`
-                absolute right-3 top-1/2 -translate-y-1/2 text-white px-4 py-2.5 rounded-xl font-bold flex items-center shadow-lg transition-all hover:scale-105 active:scale-95
-                ${feedback === 'CORRECT' ? 'bg-green-500 shadow-green-200' : 'bg-red-500 shadow-red-200'}
-              `}
+                                absolute right-2 top-1/2 -translate-y-1/2 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95
+                                ${feedback === 'CORRECT' ? 'bg-green-500' : 'bg-red-500'}
+                            `}
                         >
-                            Next <ArrowRight className="w-4 h-4 ml-2" />
+                            Next <ArrowRight className="w-4 h-4" />
                         </button>
                     )}
                 </form>
             </div>
-        </div >
+        </div>
     );
 };
 

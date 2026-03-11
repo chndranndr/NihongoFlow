@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="theme-color" content="#F1F5F9" />
 
     <title>キタ</title>
 
@@ -26,9 +26,11 @@
             (function () {
                 const savedTheme = localStorage.getItem('kita-theme');
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
 
-                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                if (isDark) {
                     document.documentElement.classList.add('dark');
+                    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020617');
                 }
             })();
     </script>

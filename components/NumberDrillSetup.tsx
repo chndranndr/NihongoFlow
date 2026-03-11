@@ -56,7 +56,7 @@ const NumberDrillSetup: React.FC<NumberDrillSetupProps> = ({ onStart, onBack }) 
             </div>
 
             {/* Direction Toggle */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Direction</h2>
                 <div className="grid grid-cols-2 gap-3">
                     <button
@@ -91,7 +91,7 @@ const NumberDrillSetup: React.FC<NumberDrillSetupProps> = ({ onStart, onBack }) 
             </div>
 
             {/* Range Selection */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Range</h2>
 
                 {/* Preset buttons */}
@@ -151,7 +151,7 @@ const NumberDrillSetup: React.FC<NumberDrillSetupProps> = ({ onStart, onBack }) 
             </div>
 
             {/* Item Count */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-8">
+            <div className="glass-card p-6 mb-8">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Questions</h2>
                 <div className="flex items-center gap-3">
                     {[10, 20, 30, 50].map((count) => (

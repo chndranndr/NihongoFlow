@@ -41,7 +41,7 @@ const DateDrillSetup: React.FC<DateDrillSetupProps> = ({ onStart, onBack }) => {
             </div>
 
             {/* Mode Selection */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Practice Mode</h2>
                 <div className="grid grid-cols-2 gap-3">
                     <button
@@ -74,7 +74,7 @@ const DateDrillSetup: React.FC<DateDrillSetupProps> = ({ onStart, onBack }) => {
             </div>
 
             {/* Direction Toggle */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Direction</h2>
                 <div className="grid grid-cols-2 gap-3">
                     <button
@@ -110,7 +110,7 @@ const DateDrillSetup: React.FC<DateDrillSetupProps> = ({ onStart, onBack }) => {
 
             {/* Full Date Options */}
             {mode === 'full-date' && (
-                <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+                <div className="glass-card p-6 mb-6">
                     <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Year Range</h2>
                     <div className="flex items-center gap-3 mb-6">
                         <input

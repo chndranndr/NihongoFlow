@@ -55,7 +55,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
 
             {/* Main Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-white rounded-2xl p-5 border border-border">
+                <div className="glass-card rounded-2xl p-5 border border-border">
                     <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
                         <Flame className="w-5 h-5 text-orange-500" />
                     </div>
@@ -63,7 +63,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
                     <p className="text-sm text-secondary">Day Streak</p>
                 </div>
 
-                <div className="bg-white rounded-2xl p-5 border border-border">
+                <div className="glass-card rounded-2xl p-5 border border-border">
                     <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
                         <Calendar className="w-5 h-5 text-blue-500" />
                     </div>
@@ -71,7 +71,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
                     <p className="text-sm text-secondary">Due Today</p>
                 </div>
 
-                <div className="bg-white rounded-2xl p-5 border border-border">
+                <div className="glass-card rounded-2xl p-5 border border-border">
                     <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-3">
                         <Brain className="w-5 h-5 text-green-500" />
                     </div>
@@ -79,7 +79,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
                     <p className="text-sm text-secondary">Learned</p>
                 </div>
 
-                <div className="bg-white rounded-2xl p-5 border border-border">
+                <div className="glass-card rounded-2xl p-5 border border-border">
                     <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-3">
                         <BookOpen className="w-5 h-5 text-purple-500" />
                     </div>
@@ -89,7 +89,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
             </div>
 
             {/* Progress Section */}
-            <div className="bg-white rounded-2xl p-6 border border-border mb-6">
+            <div className="glass-card rounded-2xl p-6 border border-border mb-6">
                 <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
                     <TrendingUp className="w-5 h-5" />
                     Overall Progress
@@ -132,7 +132,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
 
             {/* Category Breakdown */}
             <div className="grid md:grid-cols-2 gap-4 mb-8">
-                <div className="bg-white rounded-2xl p-5 border border-border">
+                <div className="glass-card rounded-2xl p-5 border border-border">
                     <div className="flex items-center gap-3 mb-4">
                         <span className="text-2xl jp-font">字</span>
                         <div>
@@ -149,7 +149,7 @@ const SRSStatsComponent: React.FC<SRSStatsProps> = ({ onBack, onStartReview }) =
                     <p className="text-xs text-secondary mt-2">{kanjiLearned} learned</p>
                 </div>
 
-                <div className="bg-white rounded-2xl p-5 border border-border">
+                <div className="glass-card rounded-2xl p-5 border border-border">
                     <div className="flex items-center gap-3 mb-4">
                         <span className="text-2xl jp-font">語</span>
                         <div>

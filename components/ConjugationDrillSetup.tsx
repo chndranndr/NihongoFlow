@@ -85,7 +85,7 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
             </div>
 
             {/* Word Type Toggle */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Word Type</h2>
                 <div className="grid grid-cols-2 gap-3">
                     <button
@@ -124,7 +124,7 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
             </div>
 
             {/* Verb/Adjective Type Selection */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">
                     {wordType === 'verb' ? 'Verb Types' : 'Adjective Types'}
                 </h2>
@@ -173,7 +173,7 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
             </div>
 
             {/* Form Selection */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Conjugation Forms</h2>
                 <div className="grid grid-cols-2 gap-2">
                     {availableForms.map(({ form, label, description }) => (
@@ -193,7 +193,7 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
             </div>
 
             {/* Question Count */}
-            <div className="bg-white border border-border rounded-2xl p-6 mb-6">
+            <div className="glass-card p-6 mb-6">
                 <h2 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Questions</h2>
                 <div className="flex items-center gap-3">
                     {[5, 10, 15, 20].map((count) => (
@@ -212,7 +212,7 @@ const ConjugationDrillSetup: React.FC<ConjugationDrillSetupProps> = ({ onStart, 
             </div>
 
             {/* Word List Preview */}
-            <div className="bg-white border border-border rounded-2xl mb-6 overflow-hidden">
+            <div className="glass-card mb-6 overflow-hidden">
                 <button
                     onClick={() => setShowWordList(!showWordList)}
                     className="w-full p-4 flex items-center justify-between text-left hover:bg-surface/50 transition-colors"

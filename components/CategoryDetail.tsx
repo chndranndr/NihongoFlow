@@ -22,47 +22,47 @@ const CategoryDetail: React.FC<CategoryDetailProps> = ({ categoryName, items, dr
     const displayName = categoryName.split('-')[1] || categoryName;
 
     return (
-        <div className="max-w-4xl mx-auto pb-24 animate-fade-in">
-            <div className="flex items-center justify-between mb-8">
+        <div className="max-w-3xl mx-auto pb-28 animate-fade-in">
+            <div className="flex items-center gap-4 mb-6">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 text-secondary hover:text-primary font-medium transition-colors"
+                    className="btn-icon"
                 >
-                    <ArrowLeft className="w-4 h-4" /> Back
+                    <ArrowLeft className="w-5 h-5" />
                 </button>
-                <div className="text-right">
-                    <h1 className="text-2xl font-bold text-primary mb-1">{displayName}</h1>
-                    <p className="text-secondary text-sm font-medium">{items.length} Characters</p>
+                <div>
+                    <h1 className="text-xl font-heading font-bold text-primary">{displayName}</h1>
+                    <p className="text-secondary text-sm">{items.length} Characters</p>
                 </div>
             </div>
 
             {/* List Preview */}
-            <div className="bg-white rounded-3xl border border-border shadow-sm mb-20 overflow-hidden">
+            <div className="glass-card overflow-hidden mb-6">
                 <div className="divide-y divide-border">
                     {items.map((item, idx) => (
                         <div
                             key={idx}
                             onClick={() => speakJapanese(item.character)}
-                            className="grid grid-cols-[minmax(6rem,1fr)_1fr_1fr_auto] items-center gap-4 px-5 py-3.5 group hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                            className="grid grid-cols-[minmax(5rem,auto)_1fr_1fr_auto] items-center gap-4 px-5 py-4 group hover:bg-primary/10 transition-colors cursor-pointer"
                         >
-                            <span className="text-2xl font-bold jp-font text-center">{item.character}</span>
-                            <span className="text-sm font-semibold text-primary group-hover:text-white">{item.primaryReading}</span>
-                            <span className="text-xs text-secondary group-hover:text-white/60">{item.meaning}</span>
-                            <Volume2 className="w-4 h-4 text-secondary/30 group-hover:text-white/50 shrink-0" />
+                            <span className="text-2xl font-bold jp-font text-center text-primary">{item.character}</span>
+                            <span className="text-sm font-semibold text-primary">{item.primaryReading}</span>
+                            <span className="text-xs text-secondary">{item.meaning}</span>
+                            <Volume2 className="w-4 h-4 text-muted group-hover:text-primary shrink-0" />
                         </div>
                     ))}
                 </div>
             </div>
 
             {/* Floating Action Bar */}
-            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
-                <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-4 flex items-center gap-4 ring-1 ring-black/5">
-                    <div className="flex items-center gap-3 pl-2 min-w-fit">
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
+                <div className="glass-strong rounded-2xl p-4 flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                         <span className="text-xs font-bold text-secondary uppercase tracking-wider">Limit</span>
                         <select
                             value={limit}
                             onChange={(e) => setLimit(Number(e.target.value))}
-                            className="bg-surface text-primary font-bold text-sm rounded-lg py-2 pl-3 pr-8 border-none focus:ring-2 focus:ring-accent/20 cursor-pointer hover:bg-border/50 transition-colors appearance-none"
+                            className="input-glass py-2 px-3 text-sm w-20"
                         >
                             <option value={10}>10</option>
                             <option value={20}>20</option>
@@ -72,7 +72,7 @@ const CategoryDetail: React.FC<CategoryDetailProps> = ({ categoryName, items, dr
 
                     <button
                         onClick={handleStart}
-                        className="flex-1 bg-primary text-white py-3.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                        className="btn-primary flex-1 flex items-center justify-center gap-2"
                     >
                         <Play className="w-4 h-4 fill-current" />
                         Start Drill

@@ -121,7 +121,7 @@ const KaiwaMode: React.FC<KaiwaModeProps> = ({ level, onBack }) => {
                         <button
                             key={s}
                             onClick={() => initSession(s)}
-                            className="w-full bg-white p-5 rounded-2xl border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left flex items-center justify-between group"
+                            className="w-full glass-card p-5 rounded-2xl hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left flex items-center justify-between group"
                         >
                             <span className="font-semibold text-primary group-hover:text-accent transition-colors">{s}</span>
                             <MessageCircle className="w-5 h-5 text-secondary group-hover:text-accent transition-colors" />
@@ -146,7 +146,7 @@ const KaiwaMode: React.FC<KaiwaModeProps> = ({ level, onBack }) => {
                 </span>
             </div>
 
-            <div className="flex-1 bg-white rounded-3xl border border-border overflow-hidden flex flex-col">
+            <div className="flex-1 glass-card overflow-hidden flex flex-col">
                 {/* Chat Area */}
                 <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-surface/30">
                     {messages.map((msg) => (
@@ -161,7 +161,7 @@ const KaiwaMode: React.FC<KaiwaModeProps> = ({ level, onBack }) => {
 
                                 <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
                                         ? 'bg-primary text-white rounded-br-md'
-                                        : 'bg-white text-primary border border-border rounded-bl-md'
+                                        : 'glass text-primary border border-border rounded-bl-md'
                                     }`}>
                                     {msg.text}
                                 </div>
@@ -174,7 +174,7 @@ const KaiwaMode: React.FC<KaiwaModeProps> = ({ level, onBack }) => {
                                 <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
                                     <Bot className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md border border-border">
+                                <div className="glass px-4 py-3 rounded-2xl rounded-bl-md border border-border">
                                     <div className="flex gap-1">
                                         <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
                                         <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
@@ -188,7 +188,7 @@ const KaiwaMode: React.FC<KaiwaModeProps> = ({ level, onBack }) => {
                 </div>
 
                 {/* Input Area */}
-                <div className="p-4 bg-white border-t border-border">
+                <div className="p-4 glass-strong border-t border-border">
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleMicClick}

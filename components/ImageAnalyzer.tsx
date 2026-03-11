@@ -126,14 +126,14 @@ const ImageAnalyzer: React.FC<ImageAnalyzerProps> = ({ onBack }) => {
                 {/* Right Column: Results */}
                 <div className="md:col-span-3">
                     {!result && !isAnalyzing && (
-                        <div className="h-full flex flex-col items-center justify-center text-secondary p-8 border border-border rounded-2xl bg-white text-center min-h-[300px]">
+                        <div className="h-full flex flex-col items-center justify-center text-secondary p-8 border border-border rounded-2xl glass-card text-center min-h-[300px]">
                             <ScanLine className="w-12 h-12 mb-4 opacity-20" />
                             <p className="font-medium text-sm">Upload an image with Japanese text to analyze</p>
                         </div>
                     )}
 
                     {isAnalyzing && (
-                        <div className="h-full flex flex-col items-center justify-center p-8 border border-border rounded-2xl bg-white gap-4 min-h-[300px]">
+                        <div className="h-full flex flex-col items-center justify-center p-8 border border-border rounded-2xl glass-card gap-4 min-h-[300px]">
                             <div className="w-12 h-12 border-4 border-surface border-t-primary rounded-full animate-spin"></div>
                             <p className="text-secondary animate-pulse font-medium">Analyzing...</p>
                         </div>
@@ -150,7 +150,7 @@ const ImageAnalyzer: React.FC<ImageAnalyzerProps> = ({ onBack }) => {
                             </div>
 
                             {/* Breakdown Table */}
-                            <div className="bg-white rounded-2xl border border-border overflow-hidden">
+                            <div className="glass-card rounded-2xl border border-border overflow-hidden">
                                 <div className="p-4 bg-surface border-b border-border">
                                     <h3 className="font-semibold text-primary">Breakdown</h3>
                                 </div>

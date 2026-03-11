@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SRSCard } from '../srsTypes';
 import { loadCards, saveCards, getDueCards, getNewCards, updateCard, updateStreak, calculateStats } from '../services/srsService';
-import { Check, ArrowRight, X, RotateCcw, ArrowLeft, Clock, Zap, Brain, Sparkles } from 'lucide-react';
+import { Check, ArrowRight, X, RotateCcw, Clock, Zap, Brain, Sparkles } from 'lucide-react';
 import SpeakerButton from './SpeakerButton';
 import { completeReview, loadProgress } from '../services/progressService';
 
@@ -20,18 +20,15 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
     const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0 });
     const [xpEarned, setXpEarned] = useState(0);
 
-    // Timer for response time tracking
     const startTimeRef = useRef<number>(0);
 
     useEffect(() => {
         const cards = loadCards();
         setAllCards(cards);
 
-        // Get due cards + some new cards
         const dueCards = getDueCards(cards, 15);
         const newCards = getNewCards(cards, 5);
 
-        // Combine and shuffle
         const queue = [...dueCards, ...newCards].sort(() => Math.random() - 0.5);
         setReviewQueue(queue);
 
@@ -60,7 +57,6 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
             wrong: prev.wrong + (isCorrect ? 0 : 1),
         }));
 
-        // Update the card with SRS algorithm
         const updatedCards = updateCard(allCards, currentCard.id, isCorrect, responseTime);
         setAllCards(updatedCards);
         saveCards(updatedCards);
@@ -75,8 +71,7 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
         } else {
             updateStreak();
             setIsComplete(true);
-            // Award XP for the session
-            const totalReviewed = sessionStats.correct + sessionStats.wrong + 1; // +1 for current
+            const totalReviewed = sessionStats.correct + sessionStats.wrong + 1;
             const prevXP = loadProgress().xp;
             completeReview(totalReviewed);
             const newXP = loadProgress().xp;
@@ -84,7 +79,6 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
         }
     };
 
-    // Calculate stats for display
     const stats = calculateStats(allCards);
 
     if (reviewQueue.length === 0 || isComplete) {
@@ -92,26 +86,26 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
         const percentage = totalReviewed > 0 ? Math.round((sessionStats.correct / totalReviewed) * 100) : 0;
 
         return (
-            <div className="max-w-md mx-auto text-center py-12 animate-fade-in-up">
-                <div className="bg-white rounded-3xl p-8 border border-border shadow-lg shadow-primary/5">
+            <div className="max-w-md mx-auto py-8 animate-fade-in-up">
+                <div className="glass-card p-8 text-center">
                     {totalReviewed > 0 ? (
                         <>
-                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Brain className="w-8 h-8 text-green-600" />
+                            <div className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                <Brain className="w-10 h-10 text-white" />
                             </div>
-                            <h2 className="text-3xl font-bold text-primary mb-2">Session Complete!</h2>
-                            <p className="text-secondary mb-8">Great job reviewing today</p>
+                            <h2 className="text-2xl font-heading font-bold text-primary mb-2">Session Complete!</h2>
+                            <p className="text-muted mb-8">Great job reviewing today</p>
 
-                            <div className="text-6xl font-bold text-accent mb-4">{percentage}%</div>
-                            <p className="text-primary font-medium mb-2">
+                            <div className="text-7xl font-bold gradient-text mb-2">{percentage}%</div>
+                            <p className="text-secondary font-medium mb-2">
                                 {sessionStats.correct} correct, {sessionStats.wrong} wrong
                             </p>
-                            <p className="text-sm text-secondary mb-4">
+                            <p className="text-sm text-accent font-semibold mb-6">
                                 🔥 {stats.streak} day streak
                             </p>
 
                             {xpEarned > 0 && (
-                                <div className="mb-8 py-3 px-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(var(--color-primary-rgb, 99,102,241), 0.1), rgba(var(--color-accent-rgb, 168,85,247), 0.1))' }}>
+                                <div className="mb-8 py-4 px-6 rounded-2xl gradient-bg-soft border border-accent/20">
                                     <div className="flex items-center justify-center gap-2">
                                         <Sparkles className="w-5 h-5 text-accent" />
                                         <span className="text-xl font-heading font-bold text-accent">+{xpEarned} XP</span>
@@ -121,11 +115,11 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                         </>
                     ) : (
                         <>
-                            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <Check className="w-8 h-8 text-blue-600" />
+                            <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-6">
+                                <Check className="w-10 h-10 text-blue-500" />
                             </div>
-                            <h2 className="text-3xl font-bold text-primary mb-2">All caught up!</h2>
-                            <p className="text-secondary mb-8">No cards due for review right now</p>
+                            <h2 className="text-2xl font-heading font-bold text-primary mb-2">All caught up!</h2>
+                            <p className="text-muted mb-8">No cards due for review right now</p>
                         </>
                     )}
 
@@ -133,7 +127,6 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                         {totalReviewed > 0 && (
                             <button
                                 onClick={() => {
-                                    // Reload for another session
                                     const cards = loadCards();
                                     const dueCards = getDueCards(cards, 15);
                                     const newCards = getNewCards(cards, 5);
@@ -146,20 +139,20 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                                     setInput('');
                                     startTimeRef.current = Date.now();
                                 }}
-                                className="w-full bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary/90 transition-all flex items-center justify-center"
+                                className="btn-primary w-full flex items-center justify-center gap-2"
                             >
-                                <RotateCcw className="w-5 h-5 mr-2" /> Continue Reviewing
+                                <RotateCcw className="w-5 h-5" /> Continue Reviewing
                             </button>
                         )}
                         <button
                             onClick={onViewStats}
-                            className="w-full bg-surface text-primary py-4 rounded-xl font-bold hover:bg-border transition-all"
+                            className="btn-secondary w-full"
                         >
                             View Statistics
                         </button>
                         <button
                             onClick={onBack}
-                            className="w-full text-secondary py-3 rounded-xl font-medium hover:text-primary transition-all"
+                            className="text-secondary font-medium hover:text-primary transition-colors py-2"
                         >
                             Back to Dashboard
                         </button>
@@ -170,82 +163,84 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
     }
 
     return (
-        <div className="max-w-md mx-auto h-[calc(100vh-140px)] flex flex-col justify-between py-4 animate-fade-in">
+        <div className="max-w-md mx-auto min-h-[calc(100vh-180px)] flex flex-col animate-fade-in">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <button onClick={onBack} className="text-secondary hover:text-primary transition-colors">
-                    <X className="w-6 h-6" />
+            <div className="flex items-center gap-4 mb-4">
+                <button onClick={onBack} className="btn-icon">
+                    <X className="w-5 h-5" />
                 </button>
-                <div className="flex-1 mx-6 h-1.5 bg-surface rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-surface rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-accent transition-all duration-500 ease-out"
+                        className="h-full gradient-bg transition-all duration-500 ease-out"
                         style={{ width: `${((currentIndex + 1) / reviewQueue.length) * 100}%` }}
                     />
                 </div>
-                <span className="text-xs font-bold text-secondary tabular-nums">
+                <span className="text-sm font-semibold text-secondary tabular-nums">
                     {currentIndex + 1} / {reviewQueue.length}
                 </span>
             </div>
 
             {/* Card Type Badge */}
             <div className="flex justify-center mb-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${currentCard.category === 'KANJI'
-                    ? 'bg-purple-100 text-purple-700'
-                    : 'bg-blue-100 text-blue-700'
+                <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${currentCard.category === 'KANJI'
+                    ? 'bg-purple-500/10 text-purple-500'
+                    : 'bg-blue-500/10 text-blue-500'
                     }`}>
                     {currentCard.category}
                 </span>
             </div>
 
             {/* Card */}
-            <div className="flex-1 flex flex-col items-center justify-center mb-8 relative">
+            <div className="flex-1 flex flex-col items-center justify-center mb-6 relative">
                 <div className={`
-                    w-full aspect-square bg-white rounded-[2rem] border-2 flex items-center justify-center p-8 transition-all duration-300
-                    ${feedback === 'IDLE' ? 'border-border' : feedback === 'CORRECT' ? 'border-green-500 bg-green-50/10' : 'border-red-500 bg-red-50/10'}
+                    w-full aspect-square glass-card flex items-center justify-center p-8 transition-all duration-300
+                    ${feedback === 'CORRECT' ? 'shadow-[0_0_40px_rgba(34,197,94,0.4)] border-green-400/50' : ''}
+                    ${feedback === 'WRONG' ? 'shadow-[0_0_40px_rgba(239,68,68,0.4)] border-red-400/50' : ''}
                 `}>
-                    <span className={`text-[8rem] font-bold jp-font leading-none ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-600' : 'text-red-500'
-                        }`}>
+                    <span className={`text-[7rem] md:text-[8rem] font-bold jp-font leading-none transition-colors duration-300
+                        ${feedback === 'IDLE' ? 'text-primary' : feedback === 'CORRECT' ? 'text-green-500' : 'text-red-500'}
+                    `}>
                         {currentCard.character}
                     </span>
-                    <div className="absolute bottom-3 right-3">
-                        <SpeakerButton text={currentCard.character} size="sm" />
+                    <div className="absolute bottom-4 right-4">
+                        <SpeakerButton text={currentCard.character} size="md" />
                     </div>
                 </div>
 
                 {/* Answer Reveal */}
                 <div className={`
-                    absolute -bottom-6 w-[90%] bg-surface rounded-xl p-4 border border-border transition-all duration-300 transform
+                    absolute -bottom-4 w-[92%] glass-strong rounded-2xl p-5 transition-all duration-300
                     ${feedback !== 'IDLE' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
                 `}>
-                    <div className="flex justify-between items-start">
-                        <div className="flex items-start gap-2">
+                    <div className="flex justify-between items-start gap-4">
+                        <div className="flex items-start gap-3">
                             <SpeakerButton text={currentCard.primaryReading} size="sm" autoPlay={feedback !== 'IDLE'} />
                             <div>
-                                <p className="text-accent font-bold text-lg mb-0.5">{currentCard.primaryReading}</p>
-                                <p className="text-primary font-medium leading-tight">{currentCard.meaning}</p>
+                                <p className="text-accent font-bold text-xl mb-1">{currentCard.primaryReading}</p>
+                                <p className="text-primary font-medium">{currentCard.meaning}</p>
                             </div>
                         </div>
                         {currentCard.category === 'KANJI' && (
-                            <div className="text-right text-xs text-secondary space-y-0.5">
+                            <div className="text-right text-xs text-muted space-y-1">
                                 {currentCard.onyomi && currentCard.onyomi.length > 0 && (
-                                    <p><span className="font-semibold">On:</span> {currentCard.onyomi.join(', ')}</p>
+                                    <p><span className="font-semibold text-secondary">On:</span> {currentCard.onyomi.join(', ')}</p>
                                 )}
                                 {currentCard.kunyomi && currentCard.kunyomi.length > 0 && (
-                                    <p><span className="font-semibold">Kun:</span> {currentCard.kunyomi.join(', ')}</p>
+                                    <p><span className="font-semibold text-secondary">Kun:</span> {currentCard.kunyomi.join(', ')}</p>
                                 )}
                             </div>
                         )}
                     </div>
                     {feedback !== 'IDLE' && (
-                        <div className="mt-2 pt-2 border-t border-border/50 flex items-center gap-2 text-xs text-secondary">
+                        <div className="mt-3 pt-3 border-t border-border flex items-center gap-2 text-xs text-muted">
                             {feedback === 'CORRECT' ? (
                                 <>
-                                    <Zap className="w-3 h-3 text-green-500" />
+                                    <Zap className="w-3.5 h-3.5 text-green-500" />
                                     <span>Next review in {Math.max(1, Math.round((allCards.find(c => c.id === currentCard.id)?.interval || 1)))} day(s)</span>
                                 </>
                             ) : (
                                 <>
-                                    <Clock className="w-3 h-3 text-red-500" />
+                                    <Clock className="w-3.5 h-3.5 text-red-500" />
                                     <span>Will repeat soon</span>
                                 </>
                             )}
@@ -255,7 +250,7 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
             </div>
 
             {/* Input Area */}
-            <div className="w-full">
+            <div className="w-full pt-8">
                 <form onSubmit={handleSubmit} className="relative">
                     <input
                         type="text"
@@ -264,8 +259,9 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                         disabled={feedback !== 'IDLE'}
                         placeholder="Type reading..."
                         className={`
-                            w-full bg-surface text-primary text-lg font-bold px-6 py-5 rounded-2xl outline-none border-2 transition-all placeholder:text-secondary/40 placeholder:font-medium
-                            ${feedback === 'IDLE' ? 'border-transparent focus:border-accent/20 focus:bg-white' : feedback === 'CORRECT' ? 'border-green-500 text-green-700' : 'border-red-500 text-red-700'}
+                            input-glass text-lg font-semibold pr-14
+                            ${feedback === 'CORRECT' ? 'border-green-400 text-green-600' : ''}
+                            ${feedback === 'WRONG' ? 'border-red-400 text-red-500' : ''}
                         `}
                         autoFocus
                     />
@@ -274,7 +270,7 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                         <button
                             type="submit"
                             disabled={!input.trim()}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-primary text-white p-2.5 rounded-xl disabled:opacity-0 disabled:scale-95 transition-all hover:scale-105 active:scale-95"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-xl gradient-bg text-white flex items-center justify-center disabled:opacity-0 disabled:scale-90 transition-all hover:scale-105 active:scale-95 shadow-lg"
                         >
                             <Check className="w-5 h-5" />
                         </button>
@@ -283,11 +279,11 @@ const SRSReview: React.FC<SRSReviewProps> = ({ onBack, onViewStats }) => {
                             type="button"
                             onClick={handleNext}
                             className={`
-                                absolute right-3 top-1/2 -translate-y-1/2 text-white px-4 py-2.5 rounded-xl font-bold flex items-center shadow-lg transition-all hover:scale-105 active:scale-95
-                                ${feedback === 'CORRECT' ? 'bg-green-500 shadow-green-200' : 'bg-red-500 shadow-red-200'}
+                                absolute right-2 top-1/2 -translate-y-1/2 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95
+                                ${feedback === 'CORRECT' ? 'bg-green-500' : 'bg-red-500'}
                             `}
                         >
-                            Next <ArrowRight className="w-4 h-4 ml-2" />
+                            Next <ArrowRight className="w-4 h-4" />
                         </button>
                     )}
                 </form>

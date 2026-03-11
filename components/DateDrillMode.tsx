@@ -129,7 +129,7 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
         const percentage = Math.round((score.correct / items.length) * 100);
         return (
             <div className="max-w-md mx-auto text-center py-12 animate-fade-in-up">
-                <div className="bg-white rounded-3xl p-8 border border-border shadow-lg shadow-primary/5">
+                <div className="glass-card p-8">
                     <h2 className="text-3xl font-bold text-primary mb-2">Drill Complete</h2>
                     <p className="text-secondary mb-8">Here's how you performed</p>
 
@@ -264,7 +264,7 @@ const DateDrillMode: React.FC<DateDrillModeProps> = ({ config, onBack }) => {
             {/* Card */}
             <div className="flex-1 flex flex-col items-center justify-center mb-8 relative">
                 <div className={`
-                    w-full aspect-square bg-white rounded-[2rem] border-2 flex flex-col items-center justify-center p-6 transition-all duration-300
+                    w-full aspect-square glass-card rounded-[2rem] border-2 flex flex-col items-center justify-center p-6 transition-all duration-300
                     ${feedback === 'IDLE' ? 'border-border' : feedback === 'CORRECT' ? 'border-green-500 bg-green-50/10' : 'border-red-500 bg-red-50/10'}
                 `}>
                     {renderDisplay()}

@@ -11,23 +11,21 @@ interface CategorySelectProps {
 }
 
 const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data, onSelect, onBack }) => {
-    // Get the data for the specific level (e.g., 'BEGINNER')
-    // data is structured as { 'BEGINNER': { 'Adjectives': [...], 'Verbs': [...] } }
     const levelData = data[level] || {};
     const categories = Object.keys(levelData);
 
     return (
-        <div className="max-w-2xl mx-auto pb-20 animate-fade-in">
-            <div className="flex items-center gap-4 mb-8">
+        <div className="max-w-2xl mx-auto pb-8 animate-fade-in">
+            <div className="flex items-center gap-4 mb-6">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 text-secondary hover:text-primary font-medium transition-colors"
+                    className="btn-icon"
                 >
-                    <ArrowLeft className="w-4 h-4" /> Back
+                    <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                    <h1 className="text-xl font-bold text-primary capitalize">{drillType.toLowerCase()} Categories</h1>
-                    <p className="text-secondary text-sm font-medium">{categories.length} Topics Available</p>
+                    <h1 className="text-xl font-heading font-bold text-primary capitalize">{drillType.toLowerCase()} Categories</h1>
+                    <p className="text-secondary text-sm">{categories.length} Topics Available</p>
                 </div>
             </div>
 
@@ -39,27 +37,27 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data,
                         <button
                             key={cat}
                             onClick={() => onSelect(cat, items)}
-                            className="group w-full bg-white p-5 rounded-2xl border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left flex items-center justify-between"
+                            className="group w-full glass-card p-5 text-left flex items-center justify-between"
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <h3 className="text-lg font-bold text-primary">{cat}</h3>
-                                    <span className="bg-surface text-secondary text-xs font-bold px-2 py-0.5 rounded-md">
+                                    <h3 className="text-lg font-heading font-semibold text-primary">{cat}</h3>
+                                    <span className="bg-surface text-secondary text-xs font-bold px-2.5 py-1 rounded-lg">
                                         {items.length}
                                     </span>
                                 </div>
 
-                                <div className="flex gap-2 opacity-60">
+                                <div className="flex gap-2">
                                     {items.slice(0, 5).map((item, idx) => (
-                                        <span key={idx} className="text-sm text-primary bg-surface px-1.5 rounded jp-font">
+                                        <span key={idx} className="text-sm text-secondary bg-surface px-2 py-0.5 rounded-lg jp-font">
                                             {item.character}
                                         </span>
                                     ))}
-                                    {items.length > 5 && <span className="text-xs text-secondary self-end">...</span>}
+                                    {items.length > 5 && <span className="text-xs text-muted self-end">...</span>}
                                 </div>
                             </div>
 
-                            <div className="bg-surface p-2 rounded-xl group-hover:bg-primary group-hover:text-white text-secondary transition-all">
+                            <div className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-secondary group-hover:gradient-bg group-hover:text-white transition-all">
                                 <ChevronRight className="w-5 h-5" />
                             </div>
                         </button>
@@ -67,7 +65,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ drillType, level, data,
                 })}
 
                 {categories.length === 0 && (
-                    <div className="text-center p-8 text-secondary">
+                    <div className="text-center py-12 text-muted">
                         No categories found for this level yet.
                     </div>
                 )}

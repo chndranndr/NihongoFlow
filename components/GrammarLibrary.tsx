@@ -77,7 +77,7 @@ const GrammarLibrary: React.FC<GrammarLibraryProps> = ({ onBack }) => {
                         <button
                             key={lesson.id}
                             onClick={() => handleLessonSelect(lesson)}
-                            className="w-full bg-white p-5 rounded-2xl border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left group flex justify-between items-center"
+                            className="w-full glass-card p-5 rounded-2xl hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all text-left group flex justify-between items-center"
                         >
                             <div>
                                 <span className="inline-block px-2 py-0.5 bg-surface text-secondary text-xs font-semibold rounded-md mb-2">
@@ -108,7 +108,7 @@ const GrammarLibrary: React.FC<GrammarLibraryProps> = ({ onBack }) => {
                 <ArrowLeft className="w-4 h-4" /> Back
             </button>
 
-            <div className="bg-white rounded-3xl border border-border overflow-hidden">
+            <div className="glass-card overflow-hidden">
 
                 {/* Header */}
                 <div className="bg-primary text-white p-8">
@@ -176,7 +176,7 @@ const GrammarLibrary: React.FC<GrammarLibraryProps> = ({ onBack }) => {
 
                                 <div className="grid grid-cols-2 gap-2 mb-5">
                                     {currentQuiz.options.map((option, idx) => {
-                                        let statusClass = "bg-white border-border hover:border-primary/30";
+                                        let statusClass = "glass border-border hover:border-primary/30";
                                         if (selectedOption === idx) {
                                             statusClass = "border-accent bg-accent/5";
                                         }
@@ -186,7 +186,7 @@ const GrammarLibrary: React.FC<GrammarLibraryProps> = ({ onBack }) => {
                                             } else if (selectedOption === idx && idx !== currentQuiz.correctAnswerIndex) {
                                                 statusClass = "border-red-300 bg-red-50 text-red-500 opacity-50";
                                             } else {
-                                                statusClass = "opacity-40 border-border bg-white";
+                                                statusClass = "opacity-40 border-border glass";
                                             }
                                         }
 
@@ -221,7 +221,7 @@ const GrammarLibrary: React.FC<GrammarLibraryProps> = ({ onBack }) => {
                                         </div>
                                         <button
                                             onClick={handleNextQuiz}
-                                            className="px-4 py-2 bg-white rounded-lg text-sm font-semibold text-primary hover:bg-surface flex items-center gap-1"
+                                            className="px-4 py-2 bg-surface rounded-lg text-sm font-semibold text-primary hover:bg-surface flex items-center gap-1"
                                         >
                                             {currentQuizIndex < selectedLesson.quiz.length - 1 ? 'Next Quiz' : 'Next Lesson'} <ArrowRight className="w-4 h-4" />
                                         </button>

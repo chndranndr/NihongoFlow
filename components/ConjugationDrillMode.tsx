@@ -103,7 +103,7 @@ const ConjugationDrillMode: React.FC<ConjugationDrillModeProps> = ({ config, onB
         const percentage = Math.round((score / items.length) * 100);
         return (
             <div className="animate-fade-in-up max-w-lg mx-auto text-center">
-                <div className="bg-white border border-border rounded-3xl p-8 mb-6">
+                <div className="glass-card p-8 mb-6">
                     <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
                         <Trophy className="w-10 h-10 text-accent" />
                     </div>
@@ -155,7 +155,7 @@ const ConjugationDrillMode: React.FC<ConjugationDrillModeProps> = ({ config, onB
             </div>
 
             {/* Question Card */}
-            <div className="bg-white border border-border rounded-3xl p-8 mb-6">
+            <div className="glass-card p-8 mb-6">
                 <div className="inline-block bg-accent/10 text-accent text-sm font-bold px-4 py-2 rounded-full mb-6">
                     → {currentItem.formLabel}
                 </div>

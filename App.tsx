@@ -35,20 +35,14 @@ const App: React.FC = () => {
     const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel>(DifficultyLevel.BEGINNER);
     const [activeDrillItems, setActiveDrillItems] = useState<DrillItem[]>([]);
 
-    // State for Category Detail View
     const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
-
-    // Settings Modal State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-    // SRS State
     const [srsDueCount, setSrsDueCount] = useState(0);
 
-    // Gamification State
+    // Achievement State
     const [achievementToastId, setAchievementToastId] = useState<string | null>(null);
     const [achievementQueue, setAchievementQueue] = useState<string[]>([]);
 
-    // Show next achievement from queue
     const showNextAchievement = useCallback(() => {
         setAchievementQueue(q => {
             if (q.length > 0) {
@@ -73,7 +67,6 @@ const App: React.FC = () => {
         setTimeout(showNextAchievement, 300);
     }, [showNextAchievement]);
 
-    // Listen for achievement events from progressService
     useEffect(() => {
         const handler = (e: Event) => {
             const ids = (e as CustomEvent<string[]>).detail;
@@ -83,7 +76,7 @@ const App: React.FC = () => {
         return () => window.removeEventListener('kita-achievement', handler);
     }, [handleAchievementUnlock]);
 
-    // Number and Date Drill State
+    // Drill Config State
     const [numberDrillConfig, setNumberDrillConfig] = useState<NumberDrillConfig | null>(null);
     const [dateDrillConfig, setDateDrillConfig] = useState<DateDrillConfig | null>(null);
     const [conjugationDrillConfig, setConjugationDrillConfig] = useState<ConjugationDrillConfig | null>(null);
@@ -102,9 +95,11 @@ const App: React.FC = () => {
         if (newDark) {
             document.documentElement.classList.add('dark');
             localStorage.setItem('kita-theme', 'dark');
+            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#020617');
         } else {
             document.documentElement.classList.remove('dark');
             localStorage.setItem('kita-theme', 'light');
+            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#F1F5F9');
         }
     };
 
@@ -126,7 +121,6 @@ const App: React.FC = () => {
     }, [mode]);
 
     // --- Handlers ---
-
     const handleStartKana = () => {
         setSelectedDrill(DrillCategory.KANA);
         setMode(AppMode.KANA_SELECT);
@@ -237,8 +231,7 @@ const App: React.FC = () => {
     const currentLevelKey = selectedLevel.split(' ')[0].toUpperCase();
 
     return (
-        <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
-
+        <div className="min-h-screen pb-8">
             <AchievementToast
                 achievementId={achievementToastId}
                 onDismiss={handleToastDismiss}
@@ -249,18 +242,18 @@ const App: React.FC = () => {
                 onClose={() => setIsSettingsOpen(false)}
             />
 
-            {/* Header - Only on Dashboard */}
+            {/* Header */}
             {mode === AppMode.DASHBOARD && (
-                <header className="sticky top-0 z-50 backdrop-blur-xl" style={{ backgroundColor: 'var(--bg-color)' }}>
-                    <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+                <header className="sticky top-0 z-50 glass-strong">
+                    <div className="max-w-3xl mx-auto px-5 h-16 flex items-center justify-between">
                         <button
-                            className="flex items-center gap-2 group"
+                            className="flex items-center gap-3 group"
                             onClick={() => setMode(AppMode.DASHBOARD)}
                         >
-                            <div className="w-9 h-9 neu-btn flex items-center justify-center group-hover:glow-primary transition-all" style={{ background: 'var(--color-primary)' }}>
+                            <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
                                 <Languages className="w-5 h-5 text-white" />
                             </div>
-                            <span className="font-heading font-bold text-xl text-primary tracking-tight neon-text-subtle">キタ</span>
+                            <span className="font-heading font-bold text-xl gradient-text">キタ</span>
                         </button>
 
                         <div className="flex items-center gap-3">
@@ -268,19 +261,18 @@ const App: React.FC = () => {
                                 <select
                                     value={selectedLevel}
                                     onChange={(e) => setSelectedLevel(e.target.value as DifficultyLevel)}
-                                    className="appearance-none neu-btn text-sm font-semibold text-primary rounded-xl pl-4 pr-9 py-2.5 cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-accent/30"
-                                    style={{ background: 'var(--bg-color)' }}
+                                    className="appearance-none btn-secondary text-sm font-medium py-2.5 pl-4 pr-10 cursor-pointer"
                                 >
                                     {Object.values(DifficultyLevel).map(level => (
                                         <option key={level} value={level}>{level}</option>
                                     ))}
                                 </select>
-                                <ChevronDown className="w-4 h-4 text-secondary absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <ChevronDown className="w-4 h-4 text-muted absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                             </div>
 
                             <button
                                 onClick={toggleDarkMode}
-                                className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-accent transition-all"
+                                className="btn-icon"
                                 title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                             >
                                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -288,7 +280,7 @@ const App: React.FC = () => {
 
                             <button
                                 onClick={() => setIsSettingsOpen(true)}
-                                className="w-10 h-10 neu-btn flex items-center justify-center text-secondary hover:text-primary transition-all"
+                                className="btn-icon"
                                 title="Settings"
                             >
                                 <Settings className="w-5 h-5" />
@@ -299,18 +291,16 @@ const App: React.FC = () => {
             )}
 
             {/* Main Content */}
-            <main className="max-w-4xl mx-auto px-6 py-12">
-
+            <main className="max-w-3xl mx-auto px-5 pt-6">
                 {mode === AppMode.DASHBOARD && (
-                    <div className="animate-fade-in-up">
-
+                    <div className="animate-fade-in-up space-y-10">
                         {/* Hero */}
-                        <div className="text-center mb-10">
-                            <h1 className="text-5xl md:text-6xl font-heading font-bold text-primary tracking-tight mb-3 neon-text-subtle">
+                        <div className="text-center py-4">
+                            <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary mb-2">
                                 鍛えよう。
                             </h1>
-                            <p className="text-base text-secondary max-w-md mx-auto font-medium tracking-widest uppercase">
-                                Kitaeyou.
+                            <p className="text-sm text-secondary font-medium tracking-widest uppercase">
+                                Kitaeyou — Let's Train
                             </p>
                         </div>
 
@@ -324,276 +314,153 @@ const App: React.FC = () => {
                             return (
                                 <button
                                     onClick={handleStartProgress}
-                                    className="w-full mb-10 p-5 rounded-2xl text-left group transition-all duration-300 hover:shadow-glow-sm"
-                                    style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}
+                                    className="w-full glass-card p-5 text-left group"
                                 >
-                                    <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                                                <Trophy className="w-5 h-5 text-white" />
+                                            <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+                                                <Trophy className="w-6 h-6 text-white" />
                                             </div>
                                             <div>
-                                                <span className="text-white/70 text-xs font-bold uppercase tracking-wider">Lv.{prog.level}</span>
-                                                <span className="text-white font-heading font-bold ml-2">{prog.xp.toLocaleString()} XP</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold text-accent uppercase tracking-wider">Level {prog.level}</span>
+                                                    {prog.streak > 0 && (
+                                                        <span className="flex items-center gap-1 text-xs font-bold text-orange-500">
+                                                            <Flame className="w-3.5 h-3.5" />
+                                                            {prog.streak}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span className="text-xl font-heading font-bold text-primary">{prog.xp.toLocaleString()} XP</span>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            {prog.streak > 0 && (
-                                                <div className="flex items-center gap-1 bg-white/20 backdrop-blur px-2.5 py-1 rounded-lg">
-                                                    <Flame className="w-4 h-4 text-orange-300" />
-                                                    <span className="text-white text-sm font-bold">{prog.streak}</span>
-                                                </div>
-                                            )}
-                                            <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
-                                    <div className="h-2 rounded-full overflow-hidden bg-white/20 mb-1.5">
-                                        <div className="h-full rounded-full bg-white/80 transition-all duration-700" style={{ width: `${pct}%` }} />
+                                    <div className="h-2 rounded-full overflow-hidden bg-surface mb-2">
+                                        <div 
+                                            className="h-full rounded-full gradient-bg transition-all duration-700" 
+                                            style={{ width: `${pct}%` }} 
+                                        />
                                     </div>
-                                    <div className="flex justify-between text-xs text-white/50 font-medium">
+                                    <div className="flex justify-between text-xs text-muted font-medium">
                                         <span>N5 Progress: {n5p}%</span>
-                                        <span>View Progress →</span>
+                                        <span>{Math.round(pct)}% to Level {prog.level + 1}</span>
                                     </div>
                                 </button>
                             );
                         })()}
 
                         {/* Practice Section */}
-                        <section className="mb-16">
-                            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-6">Practice</h2>
-
-                            <div className="grid md:grid-cols-3 gap-4">
-                                {/* Kana */}
-                                <button
+                        <section>
+                            <h2 className="section-title">Practice</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <PracticeCard
+                                    icon={<span className="text-2xl font-bold jp-font">あ</span>}
+                                    title="Kana"
+                                    subtitle="Hiragana & Katakana"
                                     onClick={handleStartKana}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
-                                        <span className="text-xl font-bold text-primary jp-font">あ</span>
-                                    </div>
-                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Kana</h3>
-                                    <p className="text-sm text-secondary font-medium mb-4">Hiragana & Katakana</p>
-                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Start <ArrowRight className="w-4 h-4 ml-1" />
-                                    </div>
-                                </button>
-
-                                {/* Kanji */}
-                                <button
+                                />
+                                <PracticeCard
+                                    icon={<span className="text-2xl font-bold jp-font">字</span>}
+                                    title="Kanji"
+                                    subtitle={selectedLevel.split(' ')[0] + ' level'}
                                     onClick={handleStartKanji}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
-                                        <span className="text-xl font-bold text-primary jp-font">字</span>
-                                    </div>
-                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Kanji</h3>
-                                    <p className="text-sm text-secondary font-medium mb-4">{selectedLevel.split(' ')[0]} level</p>
-                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Start <ArrowRight className="w-4 h-4 ml-1" />
-                                    </div>
-                                </button>
-
-                                {/* Vocab */}
-                                <button
+                                />
+                                <PracticeCard
+                                    icon={<span className="text-2xl font-bold jp-font">語</span>}
+                                    title="Vocabulary"
+                                    subtitle="Essential words"
                                     onClick={handleStartVocab}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
-                                        <span className="text-xl font-bold text-primary jp-font">語</span>
-                                    </div>
-                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Vocabulary</h3>
-                                    <p className="text-sm text-secondary font-medium mb-4">Essential words</p>
-                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Start <ArrowRight className="w-4 h-4 ml-1" />
-                                    </div>
-                                </button>
-
-                                {/* Numbers */}
-                                <button
+                                />
+                                <PracticeCard
+                                    icon={<Hash className="w-6 h-6" />}
+                                    title="Numbers"
+                                    subtitle="1 to 1,000,000"
                                     onClick={handleStartNumberDrill}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
-                                        <Hash className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Numbers</h3>
-                                    <p className="text-sm text-secondary font-medium mb-4">1 to 1,000,000</p>
-                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Start <ArrowRight className="w-4 h-4 ml-1" />
-                                    </div>
-                                </button>
-
-                                {/* Dates */}
-                                <button
+                                />
+                                <PracticeCard
+                                    icon={<Calendar className="w-6 h-6" />}
+                                    title="Dates"
+                                    subtitle="Days & full dates"
                                     onClick={handleStartDateDrill}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
-                                        <Calendar className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Dates</h3>
-                                    <p className="text-sm text-secondary font-medium mb-4">Days & full dates</p>
-                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Start <ArrowRight className="w-4 h-4 ml-1" />
-                                    </div>
-                                </button>
-
-                                {/* Conjugation */}
-                                <button
+                                />
+                                <PracticeCard
+                                    icon={<RefreshCw className="w-6 h-6" />}
+                                    title="Conjugation"
+                                    subtitle="Verbs & adjectives"
                                     onClick={handleStartConjugationDrill}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="w-12 h-12 neu-btn rounded-xl flex items-center justify-center mb-5 group-hover:glow-primary transition-all">
-                                        <RefreshCw className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <h3 className="text-lg font-heading font-bold text-primary mb-1">Conjugation</h3>
-                                    <p className="text-sm text-secondary font-medium mb-4">Verbs & adjectives</p>
-                                    <div className="flex items-center text-accent text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Start <ArrowRight className="w-4 h-4 ml-1" />
-                                    </div>
-                                </button>
+                                />
                             </div>
                         </section>
 
                         {/* SRS Section */}
-                        <section className="mb-16">
-                            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-6">Spaced Repetition</h2>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {/* SRS Review */}
-                                <button
+                        <section>
+                            <h2 className="section-title">Spaced Repetition</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <FeatureCard
+                                    icon={<Brain className="w-6 h-6" />}
+                                    title="SRS Review"
+                                    subtitle={srsDueCount > 0 ? `${srsDueCount} cards due` : 'All caught up!'}
+                                    variant="primary"
                                     onClick={handleStartSRSReview}
-                                    className="group text-left p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-glow" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                                                <Brain className="w-5 h-5 text-white" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-white mb-1">SRS Review</h3>
-                                            <p className="text-sm text-white/70 font-medium">
-                                                {srsDueCount > 0 ? `${srsDueCount} cards due` : 'All caught up!'}
-                                            </p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
-
-                                {/* SRS Stats */}
-                                <button
+                                />
+                                <FeatureCard
+                                    icon={<BarChart3 className="w-6 h-6" />}
+                                    title="Statistics"
+                                    subtitle="Track progress"
+                                    variant="secondary"
                                     onClick={handleStartSRSStats}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 neu-btn rounded-lg flex items-center justify-center mb-4 group-hover:glow-primary transition-all">
-                                                <BarChart3 className="w-5 h-5 text-primary" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-primary mb-1">Statistics</h3>
-                                            <p className="text-sm text-secondary font-medium">Track progress</p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
+                                />
                             </div>
                         </section>
 
                         {/* Learn Section */}
-                        <section className="mb-16">
-                            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-6">Learn</h2>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {/* Grammar Library */}
-                                <button
+                        <section>
+                            <h2 className="section-title">Learn</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <FeatureCard
+                                    icon={<Book className="w-6 h-6" />}
+                                    title="Grammar"
+                                    subtitle="Structured lessons"
+                                    variant="secondary"
                                     onClick={handleStartGrammarLibrary}
-                                    className="group text-left p-6 neu-card cursor-pointer hover:shadow-glow-sm transition-all duration-300"
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 neu-btn rounded-lg flex items-center justify-center mb-4 group-hover:glow-primary transition-all">
-                                                <Book className="w-5 h-5 text-primary" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-primary mb-1">Grammar</h3>
-                                            <p className="text-sm text-secondary font-medium">Structured lessons</p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
-
-                                {/* AI Lab */}
-                                <button
+                                />
+                                <FeatureCard
+                                    icon={<Sparkles className="w-6 h-6" />}
+                                    title="AI Lab"
+                                    subtitle="Infinite lessons"
+                                    variant="gradient"
                                     onClick={handleStartAIGrammar}
-                                    className="group text-left p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-glow" style={{ background: 'var(--color-primary)' }}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                                                <Sparkles className="w-5 h-5 text-white" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-white mb-1">AI Lab</h3>
-                                            <p className="text-sm text-white/60 font-medium">Infinite lessons</p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
-
-                                {/* Video Study */}
-                                <button
+                                />
+                                <FeatureCard
+                                    icon={<Film className="w-6 h-6" />}
+                                    title="Video Study"
+                                    subtitle="Learn from videos"
+                                    variant="gradient-purple"
                                     onClick={handleStartVideoStudy}
-                                    className="group text-left p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-glow" style={{ background: 'linear-gradient(135deg, var(--color-secondary), var(--color-accent))' }}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                                                <Film className="w-5 h-5 text-white" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-white mb-1">Video Study</h3>
-                                            <p className="text-sm text-white/60 font-medium">Learn from videos</p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
+                                    className="col-span-2"
+                                />
                             </div>
                         </section>
 
                         {/* Tools Section */}
                         <section>
-                            <h2 className="text-xs font-bold text-accent uppercase tracking-widest mb-6">Tools</h2>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {/* Kaiwa */}
-                                <button
+                            <h2 className="section-title">Tools</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <FeatureCard
+                                    icon={<MessageCircle className="w-6 h-6" />}
+                                    title="Kaiwa AI"
+                                    subtitle="Conversation practice"
+                                    variant="gradient"
                                     onClick={handleStartKaiwa}
-                                    className="group text-left p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-glow" style={{ background: 'var(--color-primary)' }}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                                                <MessageCircle className="w-5 h-5 text-white" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-white mb-1">Kaiwa AI</h3>
-                                            <p className="text-sm text-white/60 font-medium">Conversation practice</p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
-
-                                {/* Image Analyzer */}
-                                <button
+                                />
+                                <FeatureCard
+                                    icon={<ScanLine className="w-6 h-6" />}
+                                    title="Image Analyzer"
+                                    subtitle="Scan & translate"
+                                    variant="gradient-teal"
                                     onClick={handleStartImageAnalyzer}
-                                    className="group text-left p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-glow" style={{ background: 'linear-gradient(135deg, var(--color-secondary), var(--color-primary))' }}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                                                <ScanLine className="w-5 h-5 text-white" />
-                                            </div>
-                                            <h3 className="text-lg font-heading font-bold text-white mb-1">Image Analyzer</h3>
-                                            <p className="text-sm text-white/60 font-medium">Scan & translate</p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
-                                    </div>
-                                </button>
+                                />
                             </div>
                         </section>
                     </div>
@@ -733,20 +600,84 @@ const App: React.FC = () => {
                         onBack={() => setMode(AppMode.DASHBOARD)}
                     />
                 )}
-
             </main>
 
             {/* Footer */}
-            <footer className="py-12 text-center">
+            <footer className="py-10 text-center">
                 <button
                     onClick={() => setMode(AppMode.ABOUT)}
-                    className="inline-flex items-center gap-1.5 text-xs text-secondary font-medium tracking-wide hover:text-primary transition-colors"
+                    className="inline-flex items-center gap-2 text-xs text-muted font-medium hover:text-primary transition-colors"
                 >
-                    <Info className="w-3.5 h-3.5" />
+                    <Info className="w-4 h-4" />
                     About キタ
                 </button>
             </footer>
         </div>
+    );
+};
+
+// --- Sub Components ---
+
+interface PracticeCardProps {
+    icon: React.ReactNode;
+    title: string;
+    subtitle: string;
+    onClick: () => void;
+}
+
+const PracticeCard: React.FC<PracticeCardProps> = ({ icon, title, subtitle, onClick }) => (
+    <button
+        onClick={onClick}
+        className="glass-card p-5 text-left group flex flex-col items-center text-center gap-3"
+    >
+        <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center text-primary transition-transform group-hover:scale-110">
+            {icon}
+        </div>
+        <div>
+            <h3 className="font-heading font-semibold text-primary mb-0.5">{title}</h3>
+            <p className="text-xs text-muted">{subtitle}</p>
+        </div>
+    </button>
+);
+
+interface FeatureCardProps {
+    icon: React.ReactNode;
+    title: string;
+    subtitle: string;
+    variant: 'primary' | 'secondary' | 'gradient' | 'gradient-purple' | 'gradient-teal';
+    onClick: () => void;
+    className?: string;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, subtitle, variant, onClick, className = '' }) => {
+    const variantStyles = {
+        primary: 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white',
+        secondary: 'glass-card text-primary',
+        gradient: 'bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white',
+        'gradient-purple': 'bg-gradient-to-br from-purple-500 to-pink-500 text-white',
+        'gradient-teal': 'bg-gradient-to-br from-teal-500 to-emerald-500 text-white',
+    };
+
+    const isGlass = variant === 'secondary';
+
+    return (
+        <button
+            onClick={onClick}
+            className={`p-5 text-left group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${variantStyles[variant]} ${className}`}
+        >
+            <div className="relative z-10 flex items-start justify-between">
+                <div>
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${isGlass ? 'bg-surface' : 'bg-white/20 backdrop-blur'}`}>
+                        {React.cloneElement(icon as React.ReactElement, { 
+                            className: `w-5 h-5 ${isGlass ? 'text-primary' : 'text-white'}` 
+                        })}
+                    </div>
+                    <h3 className={`font-heading font-semibold mb-0.5 ${isGlass ? 'text-primary' : 'text-white'}`}>{title}</h3>
+                    <p className={`text-xs ${isGlass ? 'text-muted' : 'text-white/70'}`}>{subtitle}</p>
+                </div>
+                <ArrowRight className={`w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity ${isGlass ? 'text-muted' : 'text-white/60'}`} />
+            </div>
+        </button>
     );
 };
 

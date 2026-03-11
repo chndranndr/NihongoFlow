@@ -35,25 +35,24 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose }) => {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div
-                className="absolute inset-0 bg-primary/20 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-primary/10 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
-            <div className="relative bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-scale-in">
-
+            <div className="relative w-full max-w-md glass-strong rounded-3xl overflow-hidden animate-scale-in">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center">
-                            <Key className="w-5 h-5 text-primary" />
+                        <div className="w-11 h-11 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+                            <Key className="w-5 h-5 text-white" />
                         </div>
-                        <h2 className="text-xl font-bold text-primary">API Settings</h2>
+                        <h2 className="text-xl font-heading font-bold text-primary">API Settings</h2>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full bg-surface hover:bg-border text-secondary hover:text-primary flex items-center justify-center transition-colors"
+                        className="btn-icon"
                     >
-                        <X className="w-4 h-4" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -64,19 +63,21 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose }) => {
 
                     <div className="space-y-4">
                         {storedKey ? (
-                            <div className="bg-green-50 border border-green-100 p-4 rounded-2xl flex items-center justify-between">
+                            <div className="glass-card p-4 flex items-center justify-between border-green-400/30">
                                 <div className="flex items-center gap-3">
-                                    <ShieldCheck className="w-5 h-5 text-green-600" />
+                                    <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                                        <ShieldCheck className="w-5 h-5 text-green-500" />
+                                    </div>
                                     <div>
-                                        <p className="text-green-800 font-bold text-sm">Valid Key Saved</p>
-                                        <p className="text-green-600 text-xs text-ellipsis overflow-hidden max-w-[150px]">
+                                        <p className="text-primary font-bold text-sm">Valid Key Saved</p>
+                                        <p className="text-muted text-xs">
                                             ••••••••••••••••
                                         </p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={handleClear}
-                                    className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="p-2.5 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
                                     title="Remove Key"
                                 >
                                     <Trash2 className="w-4 h-4" />
@@ -93,12 +94,12 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose }) => {
                                         value={key}
                                         onChange={(e) => setKey(e.target.value)}
                                         placeholder="AIzaSy..."
-                                        className="flex-1 bg-surface border border-border text-primary rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-secondary/30"
+                                        className="input-glass flex-1"
                                     />
                                     <button
                                         onClick={handleSave}
                                         disabled={!key.trim()}
-                                        className="bg-primary text-white px-5 rounded-xl font-bold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="btn-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Save
                                     </button>
