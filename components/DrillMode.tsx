@@ -29,15 +29,26 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
         e?.preventDefault();
         if (feedback !== 'IDLE' || !currentItem) return;
 
+        const normalizedInput = input.toLowerCase().trim();
         const isCorrect =
-            input.toLowerCase().trim() === currentItem.primaryReading.toLowerCase() ||
-            currentItem.alternateReadings?.some(r => r.toLowerCase() === input.toLowerCase().trim());
+            normalizedInput === currentItem.primaryReading.toLowerCase() ||
+            currentItem.alternateReadings?.some(r => r.toLowerCase() === normalizedInput) ||
+            (category === DrillCategory.KANJI && (
+                currentItem.onyomi?.some(r => r.toLowerCase() === normalizedInput) ||
+                currentItem.kunyomi?.some(r => r.replace(/-/g, '').toLowerCase() === normalizedInput)
+            ));
 
         setFeedback(isCorrect ? 'CORRECT' : 'WRONG');
         setScore(prev => ({
             correct: prev.correct + (isCorrect ? 1 : 0),
             total: prev.total + 1
         }));
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && !input) {
+            // Prevent default just in case, though empty
+        }
     };
 
     const handleNext = () => {
@@ -178,8 +189,14 @@ const DrillMode: React.FC<DrillModeProps> = ({ category, items, onBack }) => {
                 <form onSubmit={handleSubmit} className="relative">
                     <input
                         type="text"
+                        inputMode="search"
+                        autoCapitalize="none"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        spellCheck="false"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         disabled={feedback !== 'IDLE'}
                         placeholder="Type reading..."
                         className={`

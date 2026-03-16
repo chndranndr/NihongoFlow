@@ -48,7 +48,7 @@ const GODAN_ROMAJI: Record<string, Record<string, string>> = {
     'る': { a: 'ra', i: 'ri', e: 're', o: 'ro', te: 'tte', ta: 'tta' },
 };
 
-const ROMAJI_ENDINGS = ['mu', 'bu', 'nu', 'gu', 'ku', 'su', 'tsu', 'u', 'ru'];
+const ROMAJI_ENDINGS = ['tsu', 'mu', 'bu', 'nu', 'gu', 'ku', 'su', 'ru', 'u'];
 
 function romajiStem(romaji: string): string {
     for (const end of ROMAJI_ENDINGS) {

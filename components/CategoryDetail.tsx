@@ -39,18 +39,28 @@ const CategoryDetail: React.FC<CategoryDetailProps> = ({ categoryName, items, dr
             {/* List Preview */}
             <div className="glass-card overflow-hidden mb-6">
                 <div className="divide-y divide-border">
-                    {items.map((item, idx) => (
-                        <div
-                            key={idx}
-                            onClick={() => speakJapanese(item.character)}
-                            className="grid grid-cols-[minmax(5rem,auto)_1fr_1fr_auto] items-center gap-4 px-5 py-4 group hover:bg-primary/10 transition-colors cursor-pointer"
-                        >
-                            <span className="text-2xl font-bold jp-font text-center text-primary">{item.character}</span>
-                            <span className="text-sm font-semibold text-primary">{item.primaryReading}</span>
-                            <span className="text-xs text-secondary">{item.meaning}</span>
-                            <Volume2 className="w-4 h-4 text-muted group-hover:text-primary shrink-0" />
-                        </div>
-                    ))}
+                    {items.map((item, idx) => {
+                        const isKanji = drillType === DrillCategory.KANJI;
+                        const displayReading = isKanji 
+                            ? (item.onyomi && item.onyomi.length > 0 ? item.onyomi.join(', ') : item.primaryReading)
+                            : item.primaryReading;
+                        const spokenText = isKanji && item.onyomi && item.onyomi.length > 0 
+                            ? item.onyomi[0] // TTS service will handle romaji conversion
+                            : item.character;
+
+                        return (
+                            <div
+                                key={idx}
+                                onClick={() => speakJapanese(spokenText)}
+                                className="grid grid-cols-[minmax(5rem,auto)_1fr_1fr_auto] items-center gap-4 px-5 py-4 group hover:bg-primary/10 transition-colors cursor-pointer"
+                            >
+                                <span className="text-2xl font-bold jp-font text-center text-primary">{item.character}</span>
+                                <span className="text-sm font-semibold text-primary">{displayReading}</span>
+                                <span className="text-xs text-secondary">{item.meaning}</span>
+                                <Volume2 className="w-4 h-4 text-muted group-hover:text-primary shrink-0" />
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
